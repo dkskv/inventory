@@ -1,0 +1,20 @@
+{
+  "name": "inventory",
+  "version": "1.0.0",
+  "repository": "git@github.com:dkskv/inventory.git",
+  "author": "Dmitry Kuskov <dmtrkskv@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start:dev": "concurrently \"yarn start:dev:backend\" \"yarn start:dev:frontend\"",
+    "start:dev:frontend": "cd frontend && yarn dev",
+    "start:dev:backend": "cd backend && yarn start:dev",
+    "start:prod": "cd backend && yarn start:prod",
+    "build": "yarn build:frontend && yarn build:backend",
+    "build:frontend": "cd frontend && yarn build && rm -rf ../backend/public && mv dist ../backend/public",
+    "build:backend": "cd backend && yarn build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3"
+  }
+}

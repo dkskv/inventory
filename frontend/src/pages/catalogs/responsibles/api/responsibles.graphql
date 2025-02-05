@@ -1,0 +1,21 @@
+mutation CreateResponsible($name: String!) {
+  createResponsible(name: $name)
+}
+
+mutation UpdateResponsible($id: Int!, $name: String!) {
+  updateResponsible(id: $id, name: $name)
+}
+
+mutation DeleteResponsible($id: Int!) {
+  deleteResponsible(id: $id)
+}
+
+query Responsibles($paging: PagingInput!, $filtration: CatalogFiltrationInput) {
+  responsibles(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      name
+    }
+    totalCount
+  }
+}

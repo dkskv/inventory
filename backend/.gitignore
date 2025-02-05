@@ -1,0 +1,9 @@
+# compiled output
+/dist
+/public
+/node_modules
+
+.env
+
+/certs
+/db-backups

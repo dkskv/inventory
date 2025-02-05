@@ -1,0 +1,1 @@
+export { CatalogEntityCrud } from "./ui";

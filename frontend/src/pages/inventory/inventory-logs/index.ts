@@ -1,0 +1,1 @@
+export { InventoryLogsPage } from "./ui";

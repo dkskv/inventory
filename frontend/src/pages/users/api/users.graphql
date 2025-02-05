@@ -1,0 +1,22 @@
+mutation SignUp($username: String!, $password: String!) {
+  signUp(username: $username, password: $password)
+}
+
+mutation DeleteUser($id: Int!) {
+  deleteUser(id: $id)
+}
+
+mutation UpdatePassword($id: Int!, $password: String!) {
+  updatePassword(id: $id, password: $password)
+}
+
+query Users($paging: PagingInput!, $filtration: UsersFiltrationInput) {
+  users(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      username
+      accessRole
+    }
+    totalCount
+  }
+}

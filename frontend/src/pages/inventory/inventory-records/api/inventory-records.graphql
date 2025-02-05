@@ -1,0 +1,173 @@
+query InventoryRecordsOrGroups(
+  $paging: PagingInput!
+  $filtration: InventoryRecordsFiltrationInput
+) {
+  inventoryRecordsOrGroups(paging: $paging, filtration: $filtration) {
+    items {
+      ... on InventoryRecordsGroupDto {
+        location {
+          id
+          name
+        }
+        asset {
+          id
+          name
+        }
+        responsible {
+          id
+          name
+        }
+        count
+      }
+      ... on InventoryRecordDto {
+        id
+        location {
+          id
+          name
+        }
+        asset {
+          id
+          name
+        }
+        responsible {
+          id
+          name
+        }
+        serialNumber
+        description
+      }
+    }
+    totalCount
+  }
+}
+
+query InventoryRecords(
+  $paging: PagingInput!
+  $filtration: InventoryRecordsFiltrationInput
+) {
+  inventoryRecords(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      location {
+        id
+        name
+      }
+      asset {
+        id
+        name
+      }
+      responsible {
+        id
+        name
+      }
+      serialNumber
+      description
+    }
+    totalCount
+  }
+}
+
+query InventoryRecordById($id: Int!) {
+  inventoryRecordById(id: $id) {
+    id
+    location {
+      id
+      name
+    }
+    asset {
+      id
+      name
+    }
+    responsible {
+      id
+      name
+    }
+    serialNumber
+  }
+}
+
+mutation CreateInventoryRecord(
+  $locationId: Int!
+  $responsibleId: Int!
+  $assetId: Int!
+  $serialNumber: String
+  $description: String
+) {
+  createInventoryRecord(
+    locationId: $locationId
+    responsibleId: $responsibleId
+    assetId: $assetId
+    serialNumber: $serialNumber
+    description: $description
+  )
+}
+
+mutation CreateInventoryRecordsBatch(
+  $locationId: Int!
+  $responsibleId: Int!
+  $assetId: Int!
+  $count: Int!
+  $description: String
+) {
+  createInventoryRecordsBatch(
+    locationId: $locationId
+    responsibleId: $responsibleId
+    assetId: $assetId
+    count: $count
+    description: $description
+  )
+}
+
+mutation UpdateInventoryRecord(
+  $id: Int!
+  $locationId: Int!
+  $responsibleId: Int!
+  $serialNumber: String
+  $description: String
+) {
+  updateInventoryRecord(
+    id: $id
+    locationId: $locationId
+    responsibleId: $responsibleId
+    serialNumber: $serialNumber
+    description: $description
+  )
+}
+
+mutation UpdateInventoryRecordsBatch(
+  $ids: [Int!]!
+  $locationId: Int
+  $responsibleId: Int
+  $description: String
+) {
+  updateInventoryRecordsBatch(
+    ids: $ids
+    locationId: $locationId
+    responsibleId: $responsibleId
+    description: $description
+  )
+}
+
+mutation UpdateInventoryRecordsByFiltration(
+  $filtration: InventoryRecordsFiltrationInput!
+  $locationId: Int!
+  $responsibleId: Int!
+  $description: String
+) {
+  updateInventoryRecordsByFiltration(
+    filtration: $filtration
+    locationId: $locationId
+    responsibleId: $responsibleId
+    description: $description
+  )
+}
+
+mutation DeleteInventoryRecordsBatch($ids: [Int!]!) {
+  deleteInventoryRecordsBatch(ids: $ids)
+}
+
+mutation DeleteInventoryRecordsByFiltration(
+  $filtration: InventoryRecordsFiltrationInput!
+) {
+  deleteInventoryRecordsByFiltration(filtration: $filtration)
+}

@@ -1,0 +1,1 @@
+export { ResponsiblesPage } from "./ui";

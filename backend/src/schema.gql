@@ -1,0 +1,220 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PrivilegeAccessDto {
+  name: Privilege!
+  permissions: Int!
+}
+
+enum Privilege {
+  INVENTORY
+  USERS
+}
+
+type UserDto {
+  id: Int!
+  username: String!
+  accessRole: AccessRole!
+}
+
+enum AccessRole {
+  ADMIN
+  USER
+}
+
+type UserPagedArrayDto {
+  items: [UserDto!]!
+  totalCount: Int!
+}
+
+type UserWithPrivilegesDto {
+  user: UserDto!
+  privileges: [PrivilegeAccessDto!]!
+}
+
+type AuthTokensDto {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type LocationDto {
+  id: Int!
+  name: String!
+}
+
+type LocationPagedArrayDto {
+  items: [LocationDto!]!
+  totalCount: Int!
+}
+
+type AssetDto {
+  id: Int!
+  name: String!
+}
+
+type AssetPagedArrayDto {
+  items: [AssetDto!]!
+  totalCount: Int!
+}
+
+type ResponsibleDto {
+  id: Int!
+  name: String!
+}
+
+type ResponsiblePagedArrayDto {
+  items: [ResponsibleDto!]!
+  totalCount: Int!
+}
+
+type InventoryRecordDto {
+  location: LocationDto!
+  asset: AssetDto!
+  responsible: ResponsibleDto!
+  id: Int!
+  serialNumber: String
+  description: String
+}
+
+type InventoryRecordsPagedDto {
+  items: [InventoryRecordDto!]!
+  totalCount: Int!
+}
+
+type InventoryRecordsOrGroupsPagedDto {
+  items: [InventoryRecordOrGroupDto!]!
+  totalCount: Int!
+}
+
+union InventoryRecordOrGroupDto = InventoryRecordDto | InventoryRecordsGroupDto
+
+type InventoryRecordsGroupDto {
+  location: LocationDto!
+  asset: AssetDto!
+  responsible: ResponsibleDto!
+  count: Int!
+}
+
+type InventoryLogDto {
+  timestamp: DateTime!
+  author: UserDto
+  action: Action!
+  attribute: InventoryAttribute
+  prevValue: String
+  nextValue: String
+  id: Int!
+  inventoryRecord: InventoryRecordDto!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum Action {
+  CREATE
+  UPDATE
+}
+
+enum InventoryAttribute {
+  assetId
+  locationId
+  responsibleId
+  serialNumber
+  description
+}
+
+type InventoryLogsPagedDto {
+  items: [InventoryLogDto!]!
+  totalCount: Int!
+  usedLocations: [LocationDto!]!
+  usedResponsibles: [ResponsibleDto!]!
+}
+
+type InventoryLogsOrGroupsPagedDto {
+  items: [InventoryLogOrGroupDto!]!
+  totalCount: Int!
+  usedLocations: [LocationDto!]!
+  usedResponsibles: [ResponsibleDto!]!
+}
+
+union InventoryLogOrGroupDto = InventoryLogDto | InventoryLogsGroupDto
+
+type InventoryLogsGroupDto {
+  timestamp: DateTime!
+  author: UserDto
+  action: Action!
+  attribute: InventoryAttribute
+  prevValue: String
+  nextValue: String
+  count: Int!
+}
+
+type Query {
+  currentUserWithPrivileges: UserWithPrivilegesDto
+  users(paging: PagingInput!, filtration: UsersFiltrationInput): UserPagedArrayDto!
+  assets(paging: PagingInput!, filtration: CatalogFiltrationInput): AssetPagedArrayDto!
+  locations(paging: PagingInput!, filtration: CatalogFiltrationInput): LocationPagedArrayDto!
+  responsibles(paging: PagingInput!, filtration: CatalogFiltrationInput): ResponsiblePagedArrayDto!
+  inventoryRecordsOrGroups(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsOrGroupsPagedDto!
+  inventoryRecords(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsPagedDto!
+  inventoryRecordById(id: Int!): InventoryRecordDto
+  inventoryLogsOrGroups(paging: PagingInput!, filtration: InventoryLogsFiltrationInput): InventoryLogsOrGroupsPagedDto!
+  inventoryLogs(paging: PagingInput!, filtration: InventoryLogsFiltrationInput): InventoryLogsPagedDto!
+}
+
+input PagingInput {
+  limit: Int!
+  offset: Int!
+}
+
+input UsersFiltrationInput {
+  searchText: String
+}
+
+input CatalogFiltrationInput {
+  searchText: String
+}
+
+input InventoryRecordsFiltrationInput {
+  locationIds: [Int!]
+  assetIds: [Int!]
+  responsibleIds: [Int!]
+  serialNumberSearchText: String
+  descriptionSearchText: String
+}
+
+input InventoryLogsFiltrationInput {
+  timestamp: DateTime
+  authorId: Int
+  action: Action
+  attribute: InventoryAttribute
+  nextValue: String
+  prevValue: String
+  inventoryRecordIds: [Int!]
+}
+
+type Mutation {
+  deleteUser(id: Int!): Boolean!
+  signIn(username: String!, password: String!): AuthTokensDto!
+  refresh(refreshToken: String!): AuthTokensDto!
+  signUp(username: String!, password: String!): Boolean!
+  updatePassword(id: Int!, password: String!): Boolean!
+  createAsset(name: String!): Boolean!
+  updateAsset(id: Int!, name: String!): Boolean!
+  deleteAsset(id: Int!): Boolean!
+  createLocation(name: String!): Boolean!
+  updateLocation(id: Int!, name: String!): Boolean!
+  deleteLocation(id: Int!): Boolean!
+  createResponsible(name: String!): Boolean!
+  updateResponsible(id: Int!, name: String!): Boolean!
+  deleteResponsible(id: Int!): Boolean!
+  createInventoryRecord(locationId: Int!, responsibleId: Int!, assetId: Int!, serialNumber: String, description: String): Boolean!
+  createInventoryRecordsBatch(locationId: Int!, responsibleId: Int!, assetId: Int!, count: Int!, description: String): Boolean!
+  updateInventoryRecord(id: Int!, locationId: Int!, responsibleId: Int!, serialNumber: String, description: String): Boolean!
+  updateInventoryRecordsBatch(ids: [Int!]!, locationId: Int, responsibleId: Int, description: String): Boolean!
+  updateInventoryRecordsByFiltration(filtration: InventoryRecordsFiltrationInput!, locationId: Int, responsibleId: Int, description: String): Boolean!
+  deleteInventoryRecordsBatch(ids: [Int!]!): Boolean!
+  deleteInventoryRecordsByFiltration(filtration: InventoryRecordsFiltrationInput!): Boolean!
+}

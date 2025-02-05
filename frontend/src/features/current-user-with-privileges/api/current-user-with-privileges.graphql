@@ -1,0 +1,13 @@
+query CurrentUserWithPrivileges {
+  currentUserWithPrivileges {
+    user {
+      id
+      username
+      accessRole
+    }
+    privileges {
+      name
+      permissions
+    }
+  }
+}

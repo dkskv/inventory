@@ -1,0 +1,77 @@
+query InventoryLogsOrGroups(
+  $paging: PagingInput!
+  $filtration: InventoryLogsFiltrationInput
+) {
+  inventoryLogsOrGroups(paging: $paging, filtration: $filtration) {
+    items {
+      ... on InventoryLogDto {
+        id
+        inventoryRecord {
+          id
+        }
+        author {
+          id
+          username
+        }
+        timestamp
+        action
+        attribute
+        prevValue
+        nextValue
+      }
+      ... on InventoryLogsGroupDto {
+        author {
+          id
+          username
+        }
+        count
+        timestamp
+        action
+        attribute
+        prevValue
+        nextValue
+      }
+    }
+    totalCount
+    usedLocations {
+      id
+      name
+    }
+    usedResponsibles {
+      id
+      name
+    }
+  }
+}
+
+query InventoryLogs(
+  $paging: PagingInput!
+  $filtration: InventoryLogsFiltrationInput
+) {
+  inventoryLogs(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      inventoryRecord {
+        id
+      }
+      author {
+        id
+        username
+      }
+      timestamp
+      action
+      attribute
+      prevValue
+      nextValue
+    }
+    totalCount
+    usedLocations {
+      id
+      name
+    }
+    usedResponsibles {
+      id
+      name
+    }
+  }
+}

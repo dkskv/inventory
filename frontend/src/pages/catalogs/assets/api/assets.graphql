@@ -1,0 +1,21 @@
+mutation CreateAsset($name: String!) {
+  createAsset(name: $name)
+}
+
+mutation UpdateAsset($id: Int!, $name: String!) {
+  updateAsset(id: $id, name: $name)
+}
+
+mutation DeleteAsset($id: Int!) {
+  deleteAsset(id: $id)
+}
+
+query Assets($paging: PagingInput!, $filtration: CatalogFiltrationInput) {
+  assets(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      name
+    }
+    totalCount
+  }
+}

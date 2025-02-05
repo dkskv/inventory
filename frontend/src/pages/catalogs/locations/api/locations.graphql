@@ -1,0 +1,21 @@
+mutation CreateLocation($name: String!) {
+  createLocation(name: $name)
+}
+
+mutation UpdateLocation($id: Int!, $name: String!) {
+  updateLocation(id: $id, name: $name)
+}
+
+mutation DeleteLocation($id: Int!) {
+  deleteLocation(id: $id)
+}
+
+query Locations($paging: PagingInput!, $filtration: CatalogFiltrationInput) {
+  locations(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      name
+    }
+    totalCount
+  }
+}
