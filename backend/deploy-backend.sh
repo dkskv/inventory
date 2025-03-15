@@ -2,6 +2,6 @@
 set -e
 cd "$(dirname "$0")" 
 
-docker-compose down
-docker-compose up --build
-docker image prune -a -f
+sudo docker-compose down
+sudo docker-compose up --build
+sudo docker image prune -a -f

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-git pull 
+git pull
 
 echo "Installing dependencies in the root directory..."
 yarn install
