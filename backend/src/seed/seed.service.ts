@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AccessRole } from 'src/access-control/access-control.const';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/entities/user/user.service';
@@ -8,6 +9,7 @@ export class SeedService {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   async seedAdminUser(username: string, password: string) {
@@ -20,7 +22,10 @@ export class SeedService {
       return;
     }
 
-    // this.authService.validatePassword(password);
+    if (this.configService.get('NODE_ENV') === 'production') {
+      this.authService.validatePassword(password);
+    }
+
     const passwordHash = await this.authService.hashPassword(password);
 
     try {
