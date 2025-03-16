@@ -1,6 +1,7 @@
 {
   "inventory": "Inventory",
   "catalogs": "Catalogs",
+  "administration": "Administration",
   "accountManagement": "Account management",
   "asset": "Asset",
   "assets": "Assets",

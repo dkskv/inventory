@@ -84,6 +84,24 @@ const Inventory = () => {
   );
 };
 
+const Administration = () => {
+  const { t } = useTranslation();
+
+  return (
+    <RoutableTabs
+      size="small"
+      basePath="/administration/"
+      items={[
+        {
+          label: t("accountManagement"),
+          path: "accounts",
+          element: <UsersPage />,
+        },
+      ]}
+    />
+  );
+};
+
 const Workspace = () => {
   const { t } = useTranslation();
 
@@ -109,9 +127,10 @@ const Workspace = () => {
 
   if (hasPermissions(permissionsToUsers, Permission.READ)) {
     items.push({
-      label: t("accountManagement"),
-      path: "accounts",
-      element: <UsersPage />,
+      label: t("administration"),
+      path: "administration/*",
+      defaultPath: "administration/accounts",
+      element: <Administration />,
     });
   }
 
