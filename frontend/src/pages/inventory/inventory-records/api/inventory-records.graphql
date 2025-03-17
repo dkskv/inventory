@@ -67,6 +67,24 @@ query InventoryRecords(
   }
 }
 
+query InventoryRecordsDetailedGroups(
+  $filtration: InventoryRecordsFiltrationInput
+) {
+  inventoryRecordsDetailedGroups(filtration: $filtration) {
+    location {
+      name
+    }
+    asset {
+      name
+    }
+    responsible {
+      name
+    }
+    count
+    serialNumbers
+  }
+}
+
 query InventoryRecordById($id: Int!) {
   inventoryRecordById(id: $id) {
     id

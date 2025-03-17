@@ -59,6 +59,12 @@ export class InventoryRecordsGroupDto extends BaseInventoryRecordDto {
   count: number;
 }
 
+@ObjectType()
+export class InventoryRecordsDetailedGroupDto extends InventoryRecordsGroupDto {
+  @Field(() => [String])
+  serialNumbers: string[];
+}
+
 export const InventoryRecordOrGroupDto = createUnionType({
   name: 'InventoryRecordOrGroupDto',
   types: () => [InventoryRecordDto, InventoryRecordsGroupDto] as const,

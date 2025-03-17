@@ -1,6 +1,7 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import {
   InventoryRecordDto,
+  InventoryRecordsDetailedGroupDto,
   InventoryRecordsFiltrationInput,
   InventoryRecordsOrGroupsPagedDto,
   InventoryRecordsPagedDto,
@@ -43,6 +44,18 @@ export class InventoryRecordResolver {
     filtration?: InventoryRecordsFiltrationInput,
   ): Promise<InventoryRecordsPagedDto> {
     return this.inventoryRecordService.findAll(paging, filtration);
+  }
+
+  @RequirePermissions({ [Privilege.INVENTORY]: Permission.READ })
+  @Query(() => [InventoryRecordsDetailedGroupDto])
+  async inventoryRecordsDetailedGroups(
+    @Args('filtration', { nullable: true })
+    filtration?: InventoryRecordsFiltrationInput,
+  ): Promise<InventoryRecordsDetailedGroupDto[]> {
+    // todo: брать из .env или настраивать через UI
+    const limit = 200;
+
+    return this.inventoryRecordService.findDetailedGroups(limit, filtration);
   }
 
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.READ })

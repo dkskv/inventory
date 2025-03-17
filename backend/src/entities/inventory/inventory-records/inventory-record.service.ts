@@ -125,6 +125,41 @@ export class InventoryRecordService {
     return { items, totalCount };
   }
 
+  async findDetailedGroups(limit: number, filtration?: Filtration) {
+    const query = this.repository
+      .createQueryBuilder('row')
+      .innerJoin('row.location', 'location')
+      .innerJoin('row.asset', 'asset')
+      .innerJoin('row.responsible', 'responsible')
+      .select([
+        'TO_JSONB(location) AS location',
+        'TO_JSONB(asset) AS asset',
+        'TO_JSONB(responsible) AS responsible',
+        'COUNT(*)::int AS count',
+        `JSONB_AGG(DISTINCT row.serialNumber) FILTER (WHERE row.serialNumber IS NOT NULL) AS "serialNumbers"`,
+      ])
+      .groupBy('location.id, asset.id, responsible.id')
+      .limit(limit + 1);
+
+    if (filtration) {
+      query.where(this.prepareFiltration(filtration));
+    }
+
+    const result = await query.getRawMany();
+
+    if (result.length > limit) {
+      throw new Error(`Exceeds limit of ${limit} rows`);
+    }
+
+    return result as {
+      location: Location;
+      asset: Asset;
+      responsible: Responsible;
+      count: number;
+      serialNumbers: string[];
+    }[];
+  }
+
   private async executeInTransaction(
     execute: (queryRunner: QueryRunner) => Promise<void>,
   ) {

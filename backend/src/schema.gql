@@ -77,6 +77,14 @@ type InventoryRecordDto {
   description: String
 }
 
+type InventoryRecordsDetailedGroupDto {
+  location: LocationDto!
+  asset: AssetDto!
+  responsible: ResponsibleDto!
+  count: Int!
+  serialNumbers: [String!]!
+}
+
 type InventoryRecordsPagedDto {
   items: [InventoryRecordDto!]!
   totalCount: Int!
@@ -159,6 +167,7 @@ type Query {
   responsibles(paging: PagingInput!, filtration: CatalogFiltrationInput): ResponsiblePagedArrayDto!
   inventoryRecordsOrGroups(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsOrGroupsPagedDto!
   inventoryRecords(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsPagedDto!
+  inventoryRecordsDetailedGroups(filtration: InventoryRecordsFiltrationInput): [InventoryRecordsDetailedGroupDto!]!
   inventoryRecordById(id: Int!): InventoryRecordDto
   inventoryLogsOrGroups(paging: PagingInput!, filtration: InventoryLogsFiltrationInput): InventoryLogsOrGroupsPagedDto!
   inventoryLogs(paging: PagingInput!, filtration: InventoryLogsFiltrationInput): InventoryLogsPagedDto!

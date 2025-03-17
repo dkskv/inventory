@@ -13,6 +13,8 @@ import { useMutationsConfigs } from "./use-mutations-configs";
 import { useRowSelection } from "./use-row-selection";
 import { Permission, useDelayedValue } from "@/shared/lib";
 import { usePermissions } from "@/features/current-user-with-privileges";
+import { useExportDetailedGroups } from "./use-export-detailed-groups";
+import FileExcelOutlined from "@ant-design/icons/FileExcelOutlined";
 
 function InventoryRecordsPageComponent() {
   const { t } = useTranslation();
@@ -47,9 +49,21 @@ function InventoryRecordsPageComponent() {
 
   const read = useFetchData(activeGroup, filterValueForServer);
 
+  const exportDetailedGroups = useExportDetailedGroups();
+
   const renderExtraContent = () => {
     if (selectedIds === undefined) {
-      return <Button onClick={() => setSelectedIds([])}>{t("select")}</Button>;
+      return (
+        <Flex gap="middle" align="center">
+          <Button onClick={() => setSelectedIds([])}>{t("select")}</Button>{" "}
+          <Button
+            icon={<FileExcelOutlined />}
+            onClick={() => {
+              exportDetailedGroups(filterValueForServer);
+            }}
+          />
+        </Flex>
+      );
     }
 
     return (
