@@ -5,7 +5,7 @@ import { AuthTokensDto } from './auth.dto';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './auth.guard';
 import {
-  AccessControlGuard,
+  GqlAccessControlGuard,
   RequirePermissions,
 } from 'src/access-control/access-control.guard';
 import { Permission, Privilege } from 'src/access-control/access-control.const';
@@ -35,7 +35,7 @@ export class AuthResolver {
     return this.authService.refreshTokens(refreshToken);
   }
 
-  @UseGuards(GqlAuthGuard, AccessControlGuard)
+  @UseGuards(GqlAuthGuard, GqlAccessControlGuard)
   @RequirePermissions({ [Privilege.USERS]: Permission.CREATE })
   @Mutation(() => Boolean)
   async signUp(
@@ -49,7 +49,7 @@ export class AuthResolver {
     return true;
   }
 
-  @UseGuards(GqlAuthGuard, AccessControlGuard)
+  @UseGuards(GqlAuthGuard, GqlAccessControlGuard)
   @RequirePermissions({ [Privilege.USERS]: Permission.UPDATE })
   @Mutation(() => Boolean)
   async updatePassword(

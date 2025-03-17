@@ -10,14 +10,14 @@ import { PagingInput } from 'src/shared/resolver/paging-input';
 import { Int } from '@nestjs/graphql';
 import { GqlAuthGuard } from 'src/auth/auth.guard';
 import { UseGuards } from '@nestjs/common';
-import { CurrentUserId } from 'src/shared/resolver/current-user-id-param';
+import { CurrentUserIdGql } from 'src/shared/resolver/current-user-id-param';
 import {
-  AccessControlGuard,
+  GqlAccessControlGuard,
   RequirePermissions,
 } from 'src/access-control/access-control.guard';
 import { Permission, Privilege } from 'src/access-control/access-control.const';
 
-@UseGuards(GqlAuthGuard, AccessControlGuard)
+@UseGuards(GqlAuthGuard, GqlAccessControlGuard)
 @Resolver()
 export class InventoryRecordResolver {
   constructor(
@@ -57,7 +57,7 @@ export class InventoryRecordResolver {
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.CREATE })
   @Mutation(() => Boolean)
   async createInventoryRecord(
-    @CurrentUserId() currentUserId: number,
+    @CurrentUserIdGql() currentUserId: number,
     @Args('locationId', { type: () => Int }) locationId: number,
     @Args('responsibleId', { type: () => Int }) responsibleId: number,
     @Args('assetId', { type: () => Int }) assetId: number,
@@ -81,7 +81,7 @@ export class InventoryRecordResolver {
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.CREATE })
   @Mutation(() => Boolean)
   async createInventoryRecordsBatch(
-    @CurrentUserId() currentUserId: number,
+    @CurrentUserIdGql() currentUserId: number,
     @Args('locationId', { type: () => Int }) locationId: number,
     @Args('responsibleId', { type: () => Int }) responsibleId: number,
     @Args('assetId', { type: () => Int }) assetId: number,
@@ -104,7 +104,7 @@ export class InventoryRecordResolver {
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.UPDATE })
   @Mutation(() => Boolean)
   async updateInventoryRecord(
-    @CurrentUserId() currentUserId: number,
+    @CurrentUserIdGql() currentUserId: number,
     @Args('id', { type: () => Int }) id: number,
     @Args('locationId', { type: () => Int }) locationId: number,
     @Args('responsibleId', { type: () => Int }) responsibleId: number,
@@ -127,7 +127,7 @@ export class InventoryRecordResolver {
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.UPDATE })
   @Mutation(() => Boolean)
   async updateInventoryRecordsBatch(
-    @CurrentUserId() currentUserId: number,
+    @CurrentUserIdGql() currentUserId: number,
     @Args('ids', { type: () => [Int] }) ids: number[],
     @Args('locationId', { type: () => Int, nullable: true })
     locationId?: number,
@@ -149,7 +149,7 @@ export class InventoryRecordResolver {
   @RequirePermissions({ [Privilege.INVENTORY]: Permission.UPDATE })
   @Mutation(() => Boolean)
   async updateInventoryRecordsByFiltration(
-    @CurrentUserId() currentUserId: number,
+    @CurrentUserIdGql() currentUserId: number,
     @Args('filtration') filtration: InventoryRecordsFiltrationInput,
     @Args('locationId', { type: () => Int, nullable: true })
     locationId?: number,

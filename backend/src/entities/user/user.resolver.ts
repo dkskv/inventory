@@ -9,7 +9,7 @@ import {
 } from './user.dto';
 import { UseGuards } from '@nestjs/common';
 import {
-  AccessControlGuard,
+  GqlAccessControlGuard,
   RequirePermissions,
 } from 'src/access-control/access-control.guard';
 import {
@@ -18,16 +18,16 @@ import {
   Privilege,
 } from 'src/access-control/access-control.const';
 import { GqlAuthGuard } from 'src/auth/auth.guard';
-import { CurrentUserId } from 'src/shared/resolver/current-user-id-param';
+import { CurrentUserIdGql } from 'src/shared/resolver/current-user-id-param';
 
-@UseGuards(GqlAuthGuard, AccessControlGuard)
+@UseGuards(GqlAuthGuard, GqlAccessControlGuard)
 @Resolver()
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => UserWithPrivilegesDto, { nullable: true })
   async currentUserWithPrivileges(
-    @CurrentUserId() currentUserId,
+    @CurrentUserIdGql() currentUserId,
   ): Promise<UserWithPrivilegesDto | null> {
     const user = await this.userService.findById(currentUserId);
 

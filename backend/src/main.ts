@@ -10,6 +10,9 @@ import { GqlExceptionFilter } from './exception-filter';
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService<EnvVariables, true>);
 
+  // не влияет на graphql
+  app.setGlobalPrefix('api');
+
   const frontendUrl = configService.get('FRONTEND_ORIGIN');
 
   if (isString(frontendUrl)) {

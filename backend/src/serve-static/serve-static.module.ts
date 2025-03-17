@@ -4,6 +4,7 @@ import { join } from 'path';
 
 @Module({
   imports: [
+    // Отдельный route на locales, чтобы не возвращало index.html на неизвестные языки
     ServeStaticModule.forRoot({
       serveRoot: '/locales',
       rootPath: join(__dirname, '..', 'public', 'locales'),
@@ -11,7 +12,7 @@ import { join } from 'path';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/graphql'],
+      exclude: ['/graphql', '/api'],
     }),
   ],
 })

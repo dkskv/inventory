@@ -1,6 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { extractUserIdFromContext } from './extract-user-id-from-context';
+import { extractUserIdFromRequest } from './extract-user-id-from-request';
+import { extractGqlRequest } from './extract-request-from-context';
 
-export const CurrentUserId = createParamDecorator(
-  (_: unknown, context: ExecutionContext) => extractUserIdFromContext(context),
+export const CurrentUserIdGql = createParamDecorator(
+  (_: unknown, context: ExecutionContext) =>
+    extractUserIdFromRequest(extractGqlRequest(context)),
 );
