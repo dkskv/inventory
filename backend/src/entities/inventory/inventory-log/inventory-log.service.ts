@@ -11,7 +11,9 @@ import updateTriggerSql from './sql/updateTrigger.sql';
 import dropTriggersSql from './sql/dropTriggers.sql';
 import { Paging } from 'src/shared/service/paging';
 import { findWithGroupingAndCount } from 'src/shared/service/find-with-grouping-and-count';
-import { isNil } from 'lodash';
+import { isNil, isNumber } from 'lodash';
+import { LocationService } from 'src/entities/catalogs/locations/location.service';
+import { ResponsibleService } from 'src/entities/catalogs/responsibles/responsible.service';
 
 export interface Filtration {
   timestamp?: Date | null;
@@ -32,6 +34,8 @@ export class InventoryLogService
     private readonly dataSource: DataSource,
     @InjectRepository(InventoryLog)
     private readonly repository: Repository<InventoryLog>,
+    private readonly locationsService: LocationService,
+    private readonly responsibleService: ResponsibleService,
   ) {}
 
   private async createTrigger() {
@@ -100,7 +104,10 @@ export class InventoryLogService
       order: { id: 'DESC' },
     });
 
-    return { items, totalCount };
+    const { locations: usedLocations, responsibles: usedResponsibles } =
+      await this.findUsedEntities(items);
+
+    return { items, totalCount, usedLocations, usedResponsibles };
   }
 
   async findAllItemsOrGroups(paging: Paging, filtration?: Filtration) {
@@ -120,6 +127,50 @@ export class InventoryLogService
       order: { id: 'DESC' },
     });
 
-    return { items, totalCount };
+    const { locations: usedLocations, responsibles: usedResponsibles } =
+      await this.findUsedEntities(items);
+
+    return { items, totalCount, usedLocations, usedResponsibles };
+  }
+
+  private async findUsedEntities(
+    logs: Pick<InventoryLog, 'attribute' | 'prevValue' | 'nextValue'>[],
+  ) {
+    const locationsIds = new Set<number>();
+    const responsiblesIds = new Set<number>();
+
+    logs.forEach((log) => {
+      const addTo = (collection: Set<number>) => {
+        [log.prevValue, log.nextValue].forEach((value) => {
+          if (value === null) {
+            return;
+          }
+
+          const id = JSON.parse(value);
+
+          if (!isNumber(id)) {
+            throw new Error('incorrect value type');
+          }
+
+          collection.add(id);
+        });
+      };
+
+      switch (log.attribute) {
+        case 'locationId':
+          addTo(locationsIds);
+          return;
+        case 'responsibleId':
+          addTo(responsiblesIds);
+          return;
+      }
+    });
+
+    const [locations, responsibles] = await Promise.all([
+      this.locationsService.findByIds([...locationsIds]),
+      this.responsibleService.findByIds([...responsiblesIds]),
+    ]);
+
+    return { locations, responsibles } as const;
   }
 }
