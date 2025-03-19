@@ -28,14 +28,18 @@ export class InventoryLog {
     nullable: true,
     /* typeorm выполняет парсинг jsonb данных, нет API для отключения этого поведения,
     поэтому используется transformer */
-    transformer: { to: identity, from: JSON.stringify },
+    transformer: { to: identity, from: fromDbValue },
   })
   prevValue: string | null;
 
   @Column({
     type: 'jsonb',
     nullable: true,
-    transformer: { to: identity, from: JSON.stringify },
+    transformer: { to: identity, from: fromDbValue },
   })
   nextValue: string | null;
+}
+
+function fromDbValue(data: string | null) {
+  return data === null ? null : JSON.stringify(data);
 }
