@@ -180,7 +180,7 @@ export const App = () => {
         }}
       >
         {messageElement}
-        <Layout style={{ height: "100%" }}>
+        <Layout style={{ minHeight: "100%" }}>
           <Content style={{ padding: 16 }}>
             <BrowserRouter>
               <RootPages />
