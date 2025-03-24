@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { PagedArrayClassOf } from 'src/shared/dto/paged.dto';
 import { Filtration } from './inventory-log.service';
-import { InventoryRecordDto } from '../inventory-records/inventory-record.dto';
+import { AssetDto } from 'src/entities/catalogs/assets/asset.dto';
 import { UserDto } from 'src/entities/user/user.dto';
 import { LocationDto } from 'src/entities/catalogs/locations/location.dto';
 import { ResponsibleDto } from 'src/entities/catalogs/responsibles/responsible.dto';
@@ -33,10 +33,10 @@ registerEnumType(InventoryAttribute, { name: 'InventoryAttribute' });
 @InputType()
 export class InventoryLogsFiltrationInput implements Filtration {
   @Field(() => Date, { nullable: true })
-  timestamp?: Date | null;
+  timestamp?: Date;
 
   @Field(() => Int, { nullable: true })
-  authorId: number | null;
+  authorId?: number;
 
   @Field(() => Action, { nullable: true })
   action?: Action | null;
@@ -52,6 +52,9 @@ export class InventoryLogsFiltrationInput implements Filtration {
 
   @Field(() => [Int], { nullable: true })
   inventoryRecordIds?: number[];
+
+  @Field(() => Int, { nullable: true })
+  assetId?: number;
 }
 
 @ObjectType()
@@ -61,6 +64,12 @@ abstract class BaseInventoryLogDto {
 
   @Field(() => UserDto, { nullable: true })
   author: UserDto | null;
+
+  @Field(() => AssetDto)
+  asset: AssetDto;
+
+  @Field(() => [String])
+  serialNumbers: string[];
 
   @Field(() => Action)
   action: Action;
@@ -80,8 +89,8 @@ export class InventoryLogDto extends BaseInventoryLogDto {
   @Field(() => Int)
   id: number;
 
-  @Field(() => InventoryRecordDto)
-  inventoryRecord: InventoryRecordDto;
+  @Field(() => Int)
+  inventoryRecordId: number;
 }
 
 @ObjectType()
@@ -94,7 +103,7 @@ export const InventoryLogOrGroupDto = createUnionType({
   name: 'InventoryLogOrGroupDto',
   types: () => [InventoryLogDto, InventoryLogsGroupDto] as const,
   resolveType(value: InventoryLogDto | InventoryLogsGroupDto) {
-    return 'count' in value ? InventoryLogsGroupDto : InventoryLogDto;
+    return 'id' in value ? InventoryLogDto : InventoryLogsGroupDto;
   },
 });
 

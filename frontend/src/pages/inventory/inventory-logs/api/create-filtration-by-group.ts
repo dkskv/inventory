@@ -9,4 +9,5 @@ export const createFiltrationByGroup = (
   attribute: entity.attribute,
   prevValue: entity.prevValue,
   nextValue: entity.nextValue,
+  assetId: entity.asset.id,
 });

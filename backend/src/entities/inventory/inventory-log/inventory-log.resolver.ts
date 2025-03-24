@@ -10,24 +10,12 @@ import {
   InventoryLogsFiltrationInput,
 } from './inventory-log.dto';
 import { PagingInput } from 'src/shared/resolver/paging-input';
-import { InventoryLog } from './inventory-log.entity';
+import { compact } from 'lodash';
 
 @UseGuards(GqlAuthGuard)
 @Resolver()
 export class InventoryLogResolver {
   constructor(private readonly inventoryLogService: InventoryLogService) {}
-
-  private mapEntityToDto<
-    T extends
-      | InventoryLog
-      | (Omit<InventoryLog, 'id' | 'inventoryRecord'> & { count: number }),
-  >(entity: T) {
-    return {
-      ...entity,
-      action: entity.action as Action,
-      attribute: entity.attribute as InventoryAttribute,
-    };
-  }
 
   @Query(() => InventoryLogsOrGroupsPagedDto)
   async inventoryLogsOrGroups(
@@ -40,7 +28,11 @@ export class InventoryLogResolver {
 
     return {
       ...rest,
-      items: items.map((i) => this.mapEntityToDto(i)),
+      items: items.map((item) => ({
+        ...item,
+        action: item.action as Action,
+        attribute: item.attribute as InventoryAttribute,
+      })),
     };
   }
 
@@ -57,7 +49,14 @@ export class InventoryLogResolver {
 
     return {
       ...rest,
-      items: items.map((i) => this.mapEntityToDto(i)),
+      items: items.map(({ inventoryRecord, ...item }) => ({
+        ...item,
+        inventoryRecordId: inventoryRecord.id,
+        asset: inventoryRecord.asset,
+        serialNumbers: compact([inventoryRecord.serialNumber]),
+        action: item.action as Action,
+        attribute: item.attribute as InventoryAttribute,
+      })),
     };
   }
 }

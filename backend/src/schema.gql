@@ -107,12 +107,14 @@ type InventoryRecordsGroupDto {
 type InventoryLogDto {
   timestamp: DateTime!
   author: UserDto
+  asset: AssetDto!
+  serialNumbers: [String!]!
   action: Action!
   attribute: InventoryAttribute
   prevValue: String
   nextValue: String
   id: Int!
-  inventoryRecord: InventoryRecordDto!
+  inventoryRecordId: Int!
 }
 
 """
@@ -152,6 +154,8 @@ union InventoryLogOrGroupDto = InventoryLogDto | InventoryLogsGroupDto
 type InventoryLogsGroupDto {
   timestamp: DateTime!
   author: UserDto
+  asset: AssetDto!
+  serialNumbers: [String!]!
   action: Action!
   attribute: InventoryAttribute
   prevValue: String
@@ -202,6 +206,7 @@ input InventoryLogsFiltrationInput {
   nextValue: String
   prevValue: String
   inventoryRecordIds: [Int!]
+  assetId: Int
 }
 
 type Mutation {

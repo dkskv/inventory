@@ -6,9 +6,12 @@ query InventoryLogsOrGroups(
     items {
       ... on InventoryLogDto {
         id
-        inventoryRecord {
+        inventoryRecordId
+        asset {
           id
+          name
         }
+        serialNumbers
         author {
           id
           username
@@ -20,11 +23,16 @@ query InventoryLogsOrGroups(
         nextValue
       }
       ... on InventoryLogsGroupDto {
+        count
+        asset {
+          id
+          name
+        }
+        serialNumbers
         author {
           id
           username
         }
-        count
         timestamp
         action
         attribute
@@ -51,9 +59,12 @@ query InventoryLogs(
   inventoryLogs(paging: $paging, filtration: $filtration) {
     items {
       id
-      inventoryRecord {
+      inventoryRecordId
+      asset {
         id
+        name
       }
+      serialNumbers
       author {
         id
         username

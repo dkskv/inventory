@@ -10,7 +10,7 @@ import {
   isGroup,
   InventoryLogsData,
 } from "../../api";
-import { Tag } from "antd";
+import { Row, Tag } from "antd";
 import { formatAttributeValue } from "./format-attribute-value";
 import { useMemo } from "react";
 import { usePrimaryColumn } from "@/widgets/grouped-table";
@@ -64,7 +64,7 @@ export const useColumns = ({
         </FilterPopover>
       </OverCell>
     ),
-    renderValue: (entity) => entity.inventoryRecord.id,
+    renderValue: (entity) => entity.inventoryRecordId,
     activeGroup,
     setActiveGroup,
   });
@@ -88,6 +88,23 @@ export const useColumns = ({
 
   return [
     primaryColumn,
+    {
+      title: t("asset"),
+      width: 180,
+      key: "asset",
+      render(_, { entity }) {
+        return entity.asset.name;
+      },
+    },
+    {
+      title: t("serialNumber"),
+      width: 180,
+      key: "serialNumber",
+      render(_, { entity }) {
+        // todo: ограничить отображение большого количества записей, возможно, на стороне сервера
+        return entity.serialNumbers.map((n) => <Row>{n}</Row>);
+      },
+    },
     {
       title: t("time"),
       width: 180,

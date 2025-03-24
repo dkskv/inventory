@@ -8,4 +8,5 @@ export const generateGroupKey = (entity: InventoryLogsGroupPartialDto) =>
     entity.author?.id,
     entity.prevValue,
     entity.nextValue,
+    entity.asset.id,
   ]);
