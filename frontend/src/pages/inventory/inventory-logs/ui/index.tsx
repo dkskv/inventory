@@ -45,7 +45,6 @@ const InventoryLogsPageComponent = () => {
       [activeGroup, activeGroupPage, page, fetchData, filterValueForServer]
     )
   );
-  const delayedLoading = useDelayedLoading(isLoading);
 
   useReadinessOnCondition(!!data);
 
@@ -65,6 +64,8 @@ const InventoryLogsPageComponent = () => {
     },
     data,
   });
+
+  const delayedLoading = useDelayedLoading(isLoading);
 
   if (!data) {
     return delayedLoading ? <Spin /> : null;
