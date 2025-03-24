@@ -5,6 +5,7 @@ export const Ellipsis: React.FC<{ children: string | undefined | null }> = ({
 }) => {
   return (
     <div
+      title={children ?? undefined}
       style={{
         overflow: "hidden",
         whiteSpace: "nowrap",

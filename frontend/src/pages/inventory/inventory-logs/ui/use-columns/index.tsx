@@ -1,4 +1,9 @@
-import { LocationDto, ResponsibleDto } from "@/gql/graphql";
+import {
+  Action,
+  InventoryAttribute,
+  LocationDto,
+  ResponsibleDto,
+} from "@/gql/graphql";
 import { ColumnsType } from "antd/es/table";
 import { useTranslation } from "react-i18next";
 import { FilterPopover, OverCell, FetchSelect, Ellipsis } from "@/shared/ui";
@@ -10,9 +15,9 @@ import {
   isGroup,
   InventoryLogsData,
 } from "../../api";
-import { Row, Tag } from "antd";
+import { Flex, Row, Tag } from "antd";
 import { formatAttributeValue } from "./format-attribute-value";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { usePrimaryColumn } from "@/widgets/grouped-table";
 
 interface Params {
@@ -86,6 +91,34 @@ export const useColumns = ({
     return { locations, responsibles } as const;
   }, [data]);
 
+  const renderAttribute = (attribute: InventoryAttribute) => {
+    if (attribute === "responsibleId") {
+      return <Tag>{t("responsible")}</Tag>;
+    }
+
+    if (attribute === "locationId") {
+      return <Tag>{t("location")}</Tag>;
+    }
+
+    if (attribute === "serialNumber") {
+      return <Tag>{t("serialNumber")}</Tag>;
+    }
+
+    if (attribute === "description") {
+      return <Tag>{t("description")}</Tag>;
+    }
+  };
+
+  const parseCreatingAttributes = (value: string | null | undefined) => {
+    if (!value) {
+      return {};
+    }
+
+    const { locationId, responsibleId, description } = JSON.parse(value);
+
+    return { locationId, responsibleId, description };
+  };
+
   return [
     primaryColumn,
     {
@@ -102,7 +135,9 @@ export const useColumns = ({
       key: "serialNumber",
       render(_, { entity }) {
         // todo: ограничить отображение большого количества записей, возможно, на стороне сервера
-        return entity.serialNumbers.map((n) => <Row>{n}</Row>);
+        return entity.serialNumbers.map((n, index) => (
+          <Row key={index}>{n}</Row>
+        ));
       },
     },
     {
@@ -142,27 +177,26 @@ export const useColumns = ({
       width: 180,
       key: "attribute",
       render(_, { entity }) {
-        const { attribute } = entity;
+        // todo: выполнить рефакторинг
+        if (entity.action === Action.Create) {
+          if (!entity.nextValue) {
+            return;
+          }
 
-        if (!attribute) {
-          return;
+          return (
+            <Flex vertical={true} gap="small" align="start">
+              {Object.keys(parseCreatingAttributes(entity.nextValue)).map(
+                (attribute) => (
+                  <Fragment key={attribute}>
+                    {renderAttribute(attribute as InventoryAttribute)}
+                  </Fragment>
+                )
+              )}
+            </Flex>
+          );
         }
 
-        if (attribute === "responsibleId") {
-          return <Tag>{t("responsible")}</Tag>;
-        }
-
-        if (attribute === "locationId") {
-          return <Tag>{t("location")}</Tag>;
-        }
-
-        if (attribute === "serialNumber") {
-          return <Tag>{t("serialNumber")}</Tag>;
-        }
-
-        if (attribute === "description") {
-          return <Tag>{t("description")}</Tag>;
-        }
+        return entity.attribute && renderAttribute(entity.attribute);
       },
     },
     {
@@ -188,6 +222,34 @@ export const useColumns = ({
       width: 250,
       key: "nextValue",
       render(_, { entity }) {
+        // todo: выполнить рефакторинг
+        if (entity.action === Action.Create) {
+          if (!entity.nextValue) {
+            return;
+          }
+
+          return (
+            <Flex
+              style={{ width: 250, minWidth: "100%" }}
+              vertical={true}
+              gap="small"
+            >
+              {Object.entries(parseCreatingAttributes(entity.nextValue)).map(
+                ([attribute, value]) => (
+                  <Ellipsis key={attribute}>
+                    {formatAttributeValue(
+                      attribute,
+                      // todo: выполнить рефакторинг
+                      JSON.stringify(value),
+                      usedEntities
+                    )}
+                  </Ellipsis>
+                )
+              )}
+            </Flex>
+          );
+        }
+
         return (
           <div style={{ width: 250, minWidth: "100%" }}>
             <Ellipsis>

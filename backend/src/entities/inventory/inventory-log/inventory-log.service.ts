@@ -174,12 +174,28 @@ export class InventoryLogService
 
   /** Получить сущности для атрибутов prevValue и nextValue лога */
   private async findUsedEntities(
-    logs: Pick<InventoryLog, 'attribute' | 'prevValue' | 'nextValue'>[],
+    logs: Pick<
+      InventoryLog,
+      'action' | 'attribute' | 'prevValue' | 'nextValue'
+    >[],
   ) {
     const locationsIds = new Set<number>();
     const responsiblesIds = new Set<number>();
 
     logs.forEach((log) => {
+      if (log.action === 'CREATE') {
+        if (log.nextValue === null) {
+          return;
+        }
+
+        const { locationId, responsibleId } = JSON.parse(log.nextValue);
+
+        locationsIds.add(locationId);
+        responsiblesIds.add(responsibleId);
+
+        return;
+      }
+
       const addTo = (collection: Set<number>) => {
         [log.prevValue, log.nextValue].forEach((value) => {
           if (value === null) {
