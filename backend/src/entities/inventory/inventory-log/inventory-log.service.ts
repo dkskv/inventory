@@ -122,8 +122,9 @@ export class InventoryLogService {
       'COUNT(*)::integer as count',
       'MIN(row.id) as id',
       'MIN(inventoryRecord.id) as "inventoryRecordId"',
-      'ARRAY_AGG(inventoryRecord.serialNumber) ' +
-        'FILTER (WHERE inventoryRecord.serialNumber IS NOT NULL) as "serialNumbers"',
+      'COALESCE(ARRAY_AGG(inventoryRecord.serialNumber) ' +
+        'FILTER (WHERE inventoryRecord.serialNumber IS NOT NULL), ARRAY[]::text[])' +
+        'as "serialNumbers"',
       'TO_JSONB(asset) as asset',
       'TO_JSONB(author) as author',
       'row."prevValue"::text as "prevValue"',
