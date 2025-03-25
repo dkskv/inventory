@@ -11,6 +11,7 @@ import { ResponsibleModule } from './entities/catalogs/responsibles/responsible.
 import { InventoryRecordModule } from './entities/inventory/inventory-records/inventory-record.module';
 import { InventoryLogModule } from './entities/inventory/inventory-log/inventoty-log.module';
 import { SeedModule } from './seed/seed.module';
+import { TgNotificationsModule } from './tg-notifications/tg-notifications.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   envValidationSchema,
@@ -55,6 +56,7 @@ import { StaticModule } from './serve-static/serve-static.module';
     InventoryLogModule,
     SeedModule,
     StaticModule,
+    TgNotificationsModule,
   ],
 })
 export class AppModule {}

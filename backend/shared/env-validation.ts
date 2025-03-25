@@ -23,6 +23,10 @@ export const envValidationSchema = z.object({
   // seed user
   SEED_USER_USERNAME: z.string().min(1),
   SEED_USER_PASSWORD: z.string().min(1),
+
+  // Telegram bot
+  TG_BOT_API_KEY: z.string().min(1),
+  TG_CHAT_ID: z.string().min(1),
 });
 
 export type EnvVariables = z.infer<typeof envValidationSchema>;

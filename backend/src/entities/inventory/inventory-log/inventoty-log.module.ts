@@ -16,6 +16,7 @@ import { Responsible } from 'src/entities/catalogs/responsibles/responsible.enti
     LocationService,
     ResponsibleService,
   ],
+  exports: [InventoryLogService],
 })
 export class InventoryLogModule implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly inventoryLogService: InventoryLogService) {}

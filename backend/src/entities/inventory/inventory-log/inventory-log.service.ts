@@ -21,6 +21,7 @@ export interface Filtration {
   nextValue?: string | null;
   inventoryRecordIds?: number[];
   assetId?: number;
+  ids?: number[];
 }
 
 @Injectable()
@@ -38,12 +39,12 @@ export class InventoryLogService {
     await this.dataSource.query(
       [insertTriggerSql, updateTriggerSql].join('\n'),
     );
-    console.log('Triggers created successfully');
+    console.log('Triggers on inventory_record created successfully');
   }
 
   async deleteTrigger() {
     await this.dataSource.query(dropTriggersSql);
-    console.log('Triggers deleted successfully');
+    console.log('Triggers on inventory_record deleted successfully');
   }
 
   private prepareFiltration(filtration: Filtration) {
@@ -83,6 +84,10 @@ export class InventoryLogService {
 
     if (filtration.assetId !== undefined) {
       result.inventoryRecord = { asset: { id: filtration.assetId } };
+    }
+
+    if (filtration.ids !== undefined) {
+      result.id = In(filtration.ids);
     }
 
     return result;
@@ -148,9 +153,7 @@ export class InventoryLogService {
     };
 
     const items = (rawItems as RawItem[]).map((item) =>
-      item.count > 1
-        ? omit(item, ['id', 'inventoryRecordId'])
-        : omit(item, ['count']),
+      item.count > 1 ? omit(item, ['id', 'inventoryRecordId']) : omit(item),
     );
 
     const { locations: usedLocations, responsibles: usedResponsibles } =
