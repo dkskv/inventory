@@ -185,12 +185,13 @@ export const useColumns = ({
 
           return (
             <Flex vertical={true} gap="small" align="start">
-              {Object.keys(parseCreatingAttributes(entity.nextValue)).map(
-                (attribute) => (
-                  <Fragment key={attribute}>
-                    {renderAttribute(attribute as InventoryAttribute)}
-                  </Fragment>
-                )
+              {Object.entries(parseCreatingAttributes(entity.nextValue)).map(
+                ([attribute, value]) =>
+                  value && (
+                    <Fragment key={attribute}>
+                      {renderAttribute(attribute as InventoryAttribute)}
+                    </Fragment>
+                  )
               )}
             </Flex>
           );
