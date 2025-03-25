@@ -26,4 +26,11 @@ import { GqlExceptionFilter } from './exception-filter';
   }
 
   await app.listen(configService.get('LISTEN_PORT'));
+
+  ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) =>
+    process.on(signal, async () => {
+      await app.close();
+      process.exit();
+    }),
+  );
 })();
