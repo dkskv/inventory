@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  OnApplicationBootstrap,
-  OnApplicationShutdown,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindOptionsWhere, In, IsNull, Repository } from 'typeorm';
 import { InventoryLog } from './inventory-log.entity';
@@ -28,9 +24,7 @@ export interface Filtration {
 }
 
 @Injectable()
-export class InventoryLogService
-  implements OnApplicationBootstrap, OnApplicationShutdown
-{
+export class InventoryLogService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
@@ -40,24 +34,16 @@ export class InventoryLogService
     private readonly responsibleService: ResponsibleService,
   ) {}
 
-  private async createTrigger() {
+  async createTrigger() {
     await this.dataSource.query(
       [insertTriggerSql, updateTriggerSql].join('\n'),
     );
     console.log('Triggers created successfully');
   }
 
-  private async deleteTrigger() {
+  async deleteTrigger() {
     await this.dataSource.query(dropTriggersSql);
     console.log('Triggers deleted successfully');
-  }
-
-  async onApplicationBootstrap() {
-    await this.createTrigger();
-  }
-
-  async onApplicationShutdown() {
-    await this.deleteTrigger();
   }
 
   private prepareFiltration(filtration: Filtration) {

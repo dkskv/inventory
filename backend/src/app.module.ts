@@ -1,5 +1,5 @@
 import { ApolloDriver } from '@nestjs/apollo';
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
@@ -10,7 +10,6 @@ import { AssetModule } from './entities/catalogs/assets/asset.module';
 import { ResponsibleModule } from './entities/catalogs/responsibles/responsible.module';
 import { InventoryRecordModule } from './entities/inventory/inventory-records/inventory-record.module';
 import { InventoryLogModule } from './entities/inventory/inventory-log/inventoty-log.module';
-import { SeedService } from './seed/seed.service';
 import { SeedModule } from './seed/seed.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
@@ -58,16 +57,4 @@ import { StaticModule } from './serve-static/serve-static.module';
     StaticModule,
   ],
 })
-export class AppModule implements OnApplicationBootstrap {
-  constructor(
-    private readonly seedService: SeedService,
-    private readonly configService: ConfigService<EnvVariables, true>,
-  ) {}
-
-  async onApplicationBootstrap() {
-    await this.seedService.seedAdminUser(
-      this.configService.get('SEED_USER_USERNAME'),
-      this.configService.get('SEED_USER_PASSWORD'),
-    );
-  }
-}
+export class AppModule {}

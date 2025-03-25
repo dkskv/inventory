@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventoryLogService } from './inventory-log.service';
 import { InventoryLog } from './inventory-log.entity';
@@ -17,4 +17,14 @@ import { Responsible } from 'src/entities/catalogs/responsibles/responsible.enti
     ResponsibleService,
   ],
 })
-export class InventoryLogModule {}
+export class InventoryLogModule implements OnModuleInit, OnModuleDestroy {
+  constructor(private readonly inventoryLogService: InventoryLogService) {}
+
+  async onModuleInit() {
+    await this.inventoryLogService.createTrigger();
+  }
+
+  async onModuleDestroy() {
+    await this.inventoryLogService.deleteTrigger();
+  }
+}
