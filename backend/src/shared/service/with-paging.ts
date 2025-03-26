@@ -36,7 +36,7 @@ export const withPaging = async <T extends ObjectLiteral>(
   };
 
   const [items, totalCount] = await Promise.all([
-    builder.skip(paging.offset).take(paging.limit).getRawMany(),
+    builder.offset(paging.offset).limit(paging.limit).getRawMany(),
     getTotalCount(),
   ]);
 
