@@ -3,12 +3,7 @@ import { useCallback, useState } from "react";
 import { useReadinessOnCondition } from "@/shared/ui";
 import { observer } from "mobx-react-lite";
 import { generateGroupKey, useFiltersStore } from "../model";
-import {
-  InventoryLogsGroupPartialDto,
-  isGroup,
-  InventoryLogsData,
-  useFetchData,
-} from "../api";
+import { InventoryLogsGroupPartialDto, isGroup, useFetchData } from "../api";
 import { useColumns } from "./use-columns";
 import {
   useDelayedLoading,
@@ -24,6 +19,8 @@ const InventoryLogsPageComponent = () => {
 
   const [activeGroup, setActiveGroup] =
     useState<InventoryLogsGroupPartialDto>();
+  const [loadedActiveGroup, setLoadedActiveGroup] =
+    useState<InventoryLogsGroupPartialDto>();
 
   const pageSize = 10;
   const [page, setPage] = useState(1);
@@ -31,7 +28,7 @@ const InventoryLogsPageComponent = () => {
 
   const fetchData = useFetchData();
 
-  const { data, isLoading } = useFetchHelper<InventoryLogsData>(
+  const { data, isLoading } = useFetchHelper(
     useCallback(
       () =>
         fetchData(
@@ -41,7 +38,11 @@ const InventoryLogsPageComponent = () => {
             pageSize
           ),
           filterValueForServer
-        ),
+        ).then((data) => {
+          setLoadedActiveGroup(activeGroup);
+
+          return data;
+        }),
       [activeGroup, activeGroupPage, page, fetchData, filterValueForServer]
     )
   );
@@ -57,7 +58,7 @@ const InventoryLogsPageComponent = () => {
 
   const columns = useColumns({
     filtersStore,
-    activeGroup,
+    activeGroup: loadedActiveGroup,
     setActiveGroup(g: InventoryLogsGroupPartialDto | undefined) {
       setActiveGroup(g);
       setActiveGroupPage(1);
@@ -77,8 +78,8 @@ const InventoryLogsPageComponent = () => {
       scroll={{ x: "max-content" }}
       loading={delayedLoading}
       pagination={{
-        current: activeGroup ? activeGroupPage : page,
-        onChange: activeGroup ? setActiveGroupPage : setPage,
+        current: loadedActiveGroup ? activeGroupPage : page,
+        onChange: loadedActiveGroup ? setActiveGroupPage : setPage,
         pageSize,
         total: data.totalCount,
         hideOnSinglePage: true,

@@ -11,7 +11,8 @@ import { createFiltrationByGroup } from "./create-filtration-by-group";
 
 export const useFetchData = (
   activeGroup: InventoryRecordsGroupDto | undefined,
-  filtration: InventoryRecordsFiltrationInput
+  filtration: InventoryRecordsFiltrationInput,
+  onFetch: (activeGroup: InventoryRecordsGroupDto | undefined) => void
 ) => {
   const [executeRecordsOrGroupsQuery] = useLazyQuery(
     InventoryRecordsOrGroupsDocument,
@@ -22,23 +23,31 @@ export const useFetchData = (
   });
 
   return useCallback(
-    (paging: PagingInput) => {
-      if (activeGroup) {
-        return executeRecordsQuery({
-          variables: {
-            filtration: {
-              ...filtration,
-              ...createFiltrationByGroup(activeGroup),
+    async (paging: PagingInput) => {
+      const data = await (activeGroup
+        ? executeRecordsQuery({
+            variables: {
+              filtration: {
+                ...filtration,
+                ...createFiltrationByGroup(activeGroup),
+              },
+              paging,
             },
-            paging,
-          },
-        }).then(({ data }) => data!.inventoryRecords);
-      }
+          }).then(({ data }) => data!.inventoryRecords)
+        : executeRecordsOrGroupsQuery({
+            variables: { paging, filtration },
+          }).then(({ data }) => data!.inventoryRecordsOrGroups));
 
-      return executeRecordsOrGroupsQuery({
-        variables: { paging, filtration },
-      }).then(({ data }) => data!.inventoryRecordsOrGroups);
+      onFetch(activeGroup);
+
+      return data;
     },
-    [activeGroup, executeRecordsQuery, executeRecordsOrGroupsQuery, filtration]
+    [
+      activeGroup,
+      executeRecordsQuery,
+      executeRecordsOrGroupsQuery,
+      filtration,
+      onFetch,
+    ]
   );
 };

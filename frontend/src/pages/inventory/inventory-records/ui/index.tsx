@@ -20,7 +20,12 @@ function InventoryRecordsPageComponent() {
   const { t } = useTranslation();
   const entityCrudApiRef = useRef<EntityCrudApi>();
   const permissions = usePermissions(Privilege.Inventory);
+
   const [activeGroup, setActiveGroup] = useState<InventoryRecordsGroupDto>();
+  const [loadedActiveGroup, setLoadedActiveGroup] = useState<
+    InventoryRecordsGroupDto | undefined
+  >();
+
   const { selectedIds, setSelectedIds, rowSelection } = useRowSelection();
   const catalogEntitiesFetchers = useCatalogEntitiesFetchers();
 
@@ -39,7 +44,7 @@ function InventoryRecordsPageComponent() {
 
   const columns = useColumns({
     filtersStore,
-    activeGroup,
+    activeGroup: loadedActiveGroup,
     setActiveGroup: (g: InventoryRecordsGroupDto | undefined) => {
       setActiveGroup(g);
       setActiveGroupPage(1);
@@ -47,7 +52,11 @@ function InventoryRecordsPageComponent() {
     catalogEntitiesFetchers,
   });
 
-  const read = useFetchData(activeGroup, filterValueForServer);
+  const read = useFetchData(
+    activeGroup,
+    filterValueForServer,
+    setLoadedActiveGroup
+  );
 
   const exportDetailedGroups = useExportDetailedGroups();
 
@@ -96,8 +105,8 @@ function InventoryRecordsPageComponent() {
       columns={columns}
       rowSelection={rowSelection}
       pagination={{
-        current: activeGroup ? activeGroupPage : page,
-        onChange: activeGroup ? setActiveGroupPage : setPage,
+        current: loadedActiveGroup ? activeGroupPage : page,
+        onChange: loadedActiveGroup ? setActiveGroupPage : setPage,
       }}
       permissions={selectedIds === undefined ? permissions : Permission.READ}
       renderExtraContent={renderExtraContent}
