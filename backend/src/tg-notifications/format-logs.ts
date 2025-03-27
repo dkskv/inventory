@@ -9,9 +9,9 @@ type Attribute =
 type Logs = Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>;
 
 const attributeIcons: Record<Attribute, string> = {
-  locationId: '🏠',
-  responsibleId: '🧑‍💼',
-  description: '📄',
+  locationId: '🏙️',
+  responsibleId: '👷',
+  description: '💬',
   serialNumber: '🏷️',
 };
 
