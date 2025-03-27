@@ -14,6 +14,8 @@ services:
       - REFRESH_TOKEN_TTL=${REFRESH_TOKEN_TTL}
       - SEED_USER_USERNAME=${SEED_USER_USERNAME}
       - SEED_USER_PASSWORD=${SEED_USER_PASSWORD}
+      - TG_BOT_API_KEY=${TG_BOT_API_KEY}
+      - TG_CHAT_ID=${TG_CHAT_ID}
     ports:
       - '${LISTEN_PORT}:${LISTEN_PORT}'
     # volumes:
