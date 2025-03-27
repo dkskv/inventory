@@ -136,7 +136,9 @@ export class InventoryRecordService {
         'TO_JSONB(asset) AS asset',
         'TO_JSONB(responsible) AS responsible',
         'COUNT(*)::int AS count',
-        `ARRAY_AGG(row.serialNumber) FILTER (WHERE row.serialNumber IS NOT NULL) AS "serialNumbers"`,
+        'COALESCE(ARRAY_AGG(row.serialNumber) ' +
+          'FILTER (WHERE row.serialNumber IS NOT NULL), ARRAY[]::text[])' +
+          'as "serialNumbers"',
       ])
       .groupBy('location.id, asset.id, responsible.id')
       .limit(limit + 1);
