@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvVariables } from '../shared/env-validation';
 import { isString } from 'lodash';
 import { GqlExceptionFilter } from './exception-filter';
+import * as compression from 'compression';
 
 (async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,9 @@ import { GqlExceptionFilter } from './exception-filter';
 
   // не влияет на graphql
   app.setGlobalPrefix('api');
+
+  // Включаем gzip-сжатие для всех ответов
+  app.use(compression());
 
   const frontendUrl = configService.get('FRONTEND_ORIGIN');
 
