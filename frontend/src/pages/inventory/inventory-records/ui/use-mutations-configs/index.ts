@@ -12,7 +12,7 @@ export const useMutationsConfigs = (
   filtration: InventoryRecordsFiltrationInput,
   catalogEntitiesFetchers: CatalogEntitiesFetchers
 ) => {
-  const configCreate = useConfigCreate(activeGroup, catalogEntitiesFetchers);
+  const configCreate = useConfigCreate(catalogEntitiesFetchers, activeGroup);
   const configUpdate = useConfigUpdate(catalogEntitiesFetchers, filtration);
   const configDelete = useConfigDelete(filtration);
 

@@ -1,20 +1,27 @@
-import { InventoryRecordsGroupDto, Privilege } from "@/gql/graphql";
+import {
+  InventoryRecordDto,
+  InventoryRecordsGroupDto,
+  Privilege,
+} from "@/gql/graphql";
 import { Button, Flex } from "antd";
 import { useRef, useState } from "react";
-import { EntityCrud, EntityCrudApi } from "@/shared/ui";
+import { EntityCrudApi, SwitchOnReady } from "@/shared/ui";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { generateGroupKey, useFiltersStore } from "../model";
 import { MassMutations } from "./mass-mutations";
 import { useCatalogEntitiesFetchers, isGroup } from "../api";
-import { useColumns } from "./use-columns";
-import { useFetchData } from "../api";
-import { useMutationsConfigs } from "./use-mutations-configs";
 import { useRowSelection } from "./use-row-selection";
-import { Permission, useDelayedValue } from "@/shared/lib";
+import {
+  Permission,
+  useDelayedValue,
+  useDependentState,
+  useLastNonNullable,
+} from "@/shared/lib";
 import { usePermissions } from "@/features/current-user-with-privileges";
 import { useExportDetailedGroups } from "./use-export-detailed-groups";
 import FileExcelOutlined from "@ant-design/icons/FileExcelOutlined";
+import { InventoryRecordOrGroupCrud, InventoryRecordsGroupCrud } from "./cruds";
 
 function InventoryRecordsPageComponent() {
   const { t } = useTranslation();
@@ -22,42 +29,15 @@ function InventoryRecordsPageComponent() {
   const permissions = usePermissions(Privilege.Inventory);
 
   const [activeGroup, setActiveGroup] = useState<InventoryRecordsGroupDto>();
-  const [loadedActiveGroup, setLoadedActiveGroup] = useState<
-    InventoryRecordsGroupDto | undefined
-  >();
-
-  const { selectedIds, setSelectedIds, rowSelection } = useRowSelection();
-  const catalogEntitiesFetchers = useCatalogEntitiesFetchers();
-
-  const [page, setPage] = useState(1);
-  const [activeGroupPage, setActiveGroupPage] = useState(1);
+  const lastActiveGroup = useLastNonNullable(activeGroup);
 
   const filtersStore = useFiltersStore();
   const filterValueForServer =
     useDelayedValue(filtersStore.serverValue, 500) ?? filtersStore.serverValue;
 
-  const mutationsConfigs = useMutationsConfigs(
-    activeGroup,
-    filterValueForServer,
-    catalogEntitiesFetchers
-  );
-
-  const columns = useColumns({
-    filtersStore,
-    activeGroup: loadedActiveGroup,
-    setActiveGroup: (g: InventoryRecordsGroupDto | undefined) => {
-      setActiveGroup(g);
-      setActiveGroupPage(1);
-    },
-    catalogEntitiesFetchers,
-  });
-
-  const read = useFetchData(
-    activeGroup,
-    filterValueForServer,
-    setLoadedActiveGroup
-  );
-
+  const { selectedIds, setSelectedIds, rowSelection } = useRowSelection();
+  const [rootPage, setRootPage] = useDependentState(1, [filterValueForServer]);
+  const catalogEntitiesFetchers = useCatalogEntitiesFetchers();
   const exportDetailedGroups = useExportDetailedGroups();
 
   const renderExtraContent = () => {
@@ -95,21 +75,42 @@ function InventoryRecordsPageComponent() {
   };
 
   return (
-    <EntityCrud
-      {...mutationsConfigs}
-      apiRef={entityCrudApiRef}
-      read={read}
-      getKey={(entity) =>
-        isGroup(entity) ? generateGroupKey(entity) : entity.id
-      }
-      columns={columns}
-      rowSelection={rowSelection}
-      pagination={{
-        current: loadedActiveGroup ? activeGroupPage : page,
-        onChange: loadedActiveGroup ? setActiveGroupPage : setPage,
+    <SwitchOnReady
+      activeKey={activeGroup ? "GROUP" : "ROOT"}
+      renderByKey={(key) => {
+        const commonProps = {
+          apiRef: entityCrudApiRef,
+          filtersStore,
+          filterValueForServer,
+          renderExtraContent,
+          catalogEntitiesFetchers,
+          rowSelection,
+          permissions:
+            selectedIds === undefined ? permissions : Permission.READ,
+          getKey: (entity: InventoryRecordsGroupDto | InventoryRecordDto) =>
+            isGroup(entity) ? generateGroupKey(entity) : entity.id,
+        };
+
+        if (key === "ROOT") {
+          return (
+            <InventoryRecordOrGroupCrud
+              {...commonProps}
+              pagination={{ current: rootPage, onChange: setRootPage }}
+              dive={setActiveGroup}
+            />
+          );
+        }
+
+        if (key === "GROUP" && lastActiveGroup) {
+          return (
+            <InventoryRecordsGroupCrud
+              {...commonProps}
+              group={lastActiveGroup}
+              exit={() => setActiveGroup(undefined)}
+            />
+          );
+        }
       }}
-      permissions={selectedIds === undefined ? permissions : Permission.READ}
-      renderExtraContent={renderExtraContent}
     />
   );
 }

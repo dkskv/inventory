@@ -2,7 +2,6 @@ import {
   AssetDto,
   CreateInventoryRecordDocument,
   CreateInventoryRecordsBatchDocument,
-  InventoryRecordsGroupDto,
   LocationDto,
   ResponsibleDto,
 } from "@/gql/graphql";
@@ -24,14 +23,16 @@ type FormData = {
   description?: string;
 };
 
+type LockerFormData = Pick<FormData, "asset" | "location" | "responsible">;
+
 const isBatchCount = (count: number | undefined): count is number =>
   isNumber(count) && count > 1;
 
 type Config = ConfigCreate<FormData>;
 
 export const useConfigCreate = (
-  activeGroup: InventoryRecordsGroupDto | undefined,
-  entitiesFetchers: CatalogEntitiesFetchers
+  entitiesFetchers: CatalogEntitiesFetchers,
+  lockedFormData: LockerFormData | undefined
 ): Config => {
   const { t } = useTranslation();
 
@@ -73,13 +74,13 @@ export const useConfigCreate = (
       <Form.Item<FormData>
         label={t("asset")}
         name="asset"
-        rules={[{ required: !activeGroup }]}
-        initialValue={activeGroup?.asset}
+        rules={[{ required: !lockedFormData }]}
+        initialValue={lockedFormData?.asset}
       >
         <FetchSelect
           renderLabel={({ name }) => name}
           fetchEntities={entitiesFetchers.fetchAssets}
-          disabled={!!activeGroup}
+          disabled={!!lockedFormData}
         />
       </Form.Item>
       <Form.Item<FormData>
@@ -92,25 +93,25 @@ export const useConfigCreate = (
       <Form.Item<FormData>
         label={t("location")}
         name="location"
-        rules={[{ required: !activeGroup }]}
-        initialValue={activeGroup?.location}
+        rules={[{ required: !lockedFormData }]}
+        initialValue={lockedFormData?.location}
       >
         <FetchSelect
           renderLabel={({ name }) => name}
           fetchEntities={entitiesFetchers.fetchLocations}
-          disabled={!!activeGroup}
+          disabled={!!lockedFormData}
         />
       </Form.Item>
       <Form.Item<FormData>
         label={t("responsible")}
         name="responsible"
-        rules={[{ required: !activeGroup }]}
-        initialValue={activeGroup?.responsible}
+        rules={[{ required: !lockedFormData }]}
+        initialValue={lockedFormData?.responsible}
       >
         <FetchSelect
           renderLabel={({ name }) => name}
           fetchEntities={entitiesFetchers.fetchResponsibles}
-          disabled={!!activeGroup}
+          disabled={!!lockedFormData}
         />
       </Form.Item>
       <Form.Item<FormData> label={t("description")} name="description">

@@ -1,16 +1,14 @@
-import { Spin, Table } from "antd";
-import { useCallback, useState } from "react";
-import { useReadinessOnCondition } from "@/shared/ui";
+import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { generateGroupKey, useFiltersStore } from "../model";
-import { InventoryLogsGroupPartialDto, isGroup, useFetchData } from "../api";
-import { useColumns } from "./use-columns";
+import { useFiltersStore } from "../model";
+import { InventoryLogsGroupPartialDto } from "../api";
 import {
-  useDelayedLoading,
   useDelayedValue,
-  useFetchHelper,
+  useDependentState,
+  useLastNonNullable,
 } from "@/shared/lib";
-import { createPaginationParams } from "@/shared/lib";
+import { SwitchOnReady } from "@/shared/ui";
+import { InventoryLogOrGroupCrud, InventoryLogsGroupCrud } from "../cruds";
 
 const InventoryLogsPageComponent = () => {
   const filtersStore = useFiltersStore();
@@ -19,75 +17,51 @@ const InventoryLogsPageComponent = () => {
 
   const [activeGroup, setActiveGroup] =
     useState<InventoryLogsGroupPartialDto>();
-  const [loadedActiveGroup, setLoadedActiveGroup] =
-    useState<InventoryLogsGroupPartialDto>();
+  const lastActiveGroup = useLastNonNullable(activeGroup);
 
-  const pageSize = 10;
-  const [page, setPage] = useState(1);
-  const [activeGroupPage, setActiveGroupPage] = useState(1);
-
-  const fetchData = useFetchData();
-
-  const { data, isLoading } = useFetchHelper(
-    useCallback(
-      () =>
-        fetchData(
-          activeGroup,
-          createPaginationParams(
-            activeGroup ? activeGroupPage : page,
-            pageSize
-          ),
-          filterValueForServer
-        ).then((data) => {
-          setLoadedActiveGroup(activeGroup);
-
-          return data;
-        }),
-      [activeGroup, activeGroupPage, page, fetchData, filterValueForServer]
-    )
-  );
-
-  useReadinessOnCondition(!!data);
-
-  const dataSource = data
-    ? data.items.map((entity) => ({
-        key: isGroup(entity) ? generateGroupKey(entity) : entity.id,
-        entity: entity,
-      }))
-    : [];
-
-  const columns = useColumns({
-    filtersStore,
-    activeGroup: loadedActiveGroup,
-    setActiveGroup(g: InventoryLogsGroupPartialDto | undefined) {
-      setActiveGroup(g);
-      setActiveGroupPage(1);
-    },
-    data,
-  });
-
-  const delayedLoading = useDelayedLoading(isLoading);
-
-  if (!data) {
-    return delayedLoading ? <Spin /> : null;
-  }
+  const [rootPage, setRootPage] = useDependentState(1, [filterValueForServer]);
 
   return (
-    <Table
-      dataSource={dataSource}
-      scroll={{ x: "max-content" }}
-      loading={delayedLoading}
-      pagination={{
-        current: loadedActiveGroup ? activeGroupPage : page,
-        onChange: loadedActiveGroup ? setActiveGroupPage : setPage,
-        pageSize,
-        total: data.totalCount,
-        hideOnSinglePage: true,
-        size: "default",
-        showSizeChanger: false,
+    <SwitchOnReady
+      activeKey={activeGroup ? "GROUP" : "ROOT"}
+      renderByKey={(key) => {
+        const commonProps = {
+          filtersStore,
+          filterValueForServer,
+          scroll: { x: "max-content" },
+          size: "middle",
+          pagination: {
+            pageSize: 10,
+            hideOnSinglePage: true,
+            size: "default",
+            showSizeChanger: false,
+          },
+        } as const;
+
+        if (key === "ROOT") {
+          return (
+            <InventoryLogOrGroupCrud
+              {...commonProps}
+              dive={setActiveGroup}
+              pagination={{
+                ...commonProps.pagination,
+                current: rootPage,
+                onChange: setRootPage,
+              }}
+            />
+          );
+        }
+
+        if (key === "GROUP" && lastActiveGroup) {
+          return (
+            <InventoryLogsGroupCrud
+              {...commonProps}
+              group={lastActiveGroup}
+              exit={() => setActiveGroup(undefined)}
+            />
+          );
+        }
       }}
-      size="middle"
-      columns={columns}
     />
   );
 };

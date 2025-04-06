@@ -1,6 +1,7 @@
 import {
   Action,
   InventoryAttribute,
+  InventoryLogsOrGroupsQuery,
   LocationDto,
   ResponsibleDto,
 } from "@/gql/graphql";
@@ -13,7 +14,6 @@ import {
   InventoryLogsGroupPartialDto,
   useFetchInventoryRecords,
   isGroup,
-  InventoryLogsData,
 } from "../../api";
 import { Flex, Row, Tag } from "antd";
 import { formatAttributeValue } from "./format-attribute-value";
@@ -25,7 +25,10 @@ interface Params {
   setActiveGroup: (group: InventoryLogsGroupPartialDto | undefined) => void;
   filtersStore: FiltersStore;
   data:
-    | Pick<InventoryLogsData, "usedLocations" | "usedResponsibles">
+    | Pick<
+        InventoryLogsOrGroupsQuery["inventoryLogsOrGroups"],
+        "usedLocations" | "usedResponsibles"
+      >
     | undefined;
 }
 
