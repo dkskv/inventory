@@ -1,6 +1,6 @@
 import PlusOutlined from "@ant-design/icons/lib/icons/PlusOutlined";
 import { Button, Flex, Spin, Table } from "antd";
-import { useCallback, useImperativeHandle, useState } from "react";
+import { useCallback, useImperativeHandle } from "react";
 import { ColumnsType, TableProps } from "antd/es/table";
 import {
   ALL_PERMISSIONS,
@@ -8,6 +8,7 @@ import {
   Permission,
   hasPermissions,
   PaginationParams,
+  useDependentState,
 } from "@/shared/lib";
 import { useReadinessOnCondition } from "../switch-on-ready";
 import { OverCell } from "../over-cell";
@@ -75,7 +76,7 @@ export const EntityCrud = <
 >) => {
   const { t } = useTranslation();
 
-  const [pageState, setPageState] = useState(1);
+  const [pageState, setPageState] = useDependentState(1, [read]);
 
   const pageSize = props.pagination?.pageSize ?? 10;
   const page = props.pagination?.current ?? pageState;
