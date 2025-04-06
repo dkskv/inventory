@@ -4,7 +4,7 @@ import {
   DataSource,
   DeepPartial,
   FindOptionsWhere,
-  Like,
+  ILike,
   In,
   QueryRunner,
   Repository,
@@ -87,11 +87,11 @@ export class InventoryRecordService {
     }
 
     if (filtration.serialNumberSearchText) {
-      result.serialNumber = Like(`%${filtration.serialNumberSearchText}%`);
+      result.serialNumber = ILike(`%${filtration.serialNumberSearchText}%`);
     }
 
     if (filtration.descriptionSearchText) {
-      result.description = Like(`%${filtration.descriptionSearchText}%`);
+      result.description = ILike(`%${filtration.descriptionSearchText}%`);
     }
 
     return result;

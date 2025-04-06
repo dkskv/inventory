@@ -1,6 +1,6 @@
 import { BaseService } from 'src/shared/service/base.service';
 import { PagedArray, Paging } from 'src/shared/service/paging';
-import { FindOptionsWhere, Like, In } from 'typeorm';
+import { FindOptionsWhere, ILike, In } from 'typeorm';
 
 export interface CatalogFiltration {
   searchText?: string;
@@ -11,7 +11,7 @@ export class CatalogEntityService<
 > extends BaseService<T> {
   private getSearchOptionsWhere(searchText: string) {
     return {
-      name: Like(`%${searchText}%`),
+      name: ILike(`%${searchText}%`),
     } as FindOptionsWhere<T>;
   }
 

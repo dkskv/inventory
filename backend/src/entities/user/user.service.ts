@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { BaseService } from 'src/shared/service/base.service';
 import { PagedArray, Paging } from 'src/shared/service/paging';
@@ -21,7 +21,7 @@ export class UserService extends BaseService<User> {
 
   private getSearchOptionsWhere(searchText: string) {
     return {
-      username: Like(`%${searchText}%`),
+      username: ILike(`%${searchText}%`),
     };
   }
 
