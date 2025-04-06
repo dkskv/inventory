@@ -15,7 +15,17 @@ DB_USER=$(docker exec "$CONTAINER_NAME" printenv POSTGRES_USER)
 DB_PASSWORD=$(docker exec "$CONTAINER_NAME" printenv POSTGRES_PASSWORD)
 DB_NAME=$(docker exec "$CONTAINER_NAME" printenv POSTGRES_DB)
 
-if [ -z "$DB_USER" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_NAME" ]; then
-  echo "❌ Ошибка: не удалось получить параметры подключения из контейнера."
+if [ -z "$DB_USER" ]; then
+  echo "❌ Ошибка: не удалось получить имя пользователя из контейнера."
   exit 1
+fi
+
+if [ -z "$DB_PASSWORD" ]; then
+  echo "❌ Ошибка: не удалось получить пароль подключения из контейнера."
+  exit 1
+fi
+
+if [ -z "$DB_NAME" ]; then
+  echo "⚠️ Переменная POSTGRES_DB не найдена. Используем имя пользователя в качестве имени базы."
+  DB_NAME="$DB_USER"
 fi
