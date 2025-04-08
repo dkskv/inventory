@@ -31,12 +31,6 @@ export class InventoryRecordService {
     private readonly dataSource: DataSource,
     @InjectRepository(InventoryRecord)
     private readonly repository: Repository<InventoryRecord>,
-    @InjectRepository(Location)
-    private readonly locationRepository: Repository<Location>,
-    @InjectRepository(Responsible)
-    private readonly responsibleRepository: Repository<Responsible>,
-    @InjectRepository(Asset)
-    private readonly itemRepository: Repository<Asset>,
   ) {}
 
   public async prepareBaseEntity(values: {
@@ -46,26 +40,14 @@ export class InventoryRecordService {
     serialNumber?: string;
     description?: string;
   }): Promise<DeepPartial<InventoryRecord>> {
-    const [location, responsible, asset] = await Promise.all([
-      values.locationId === undefined
-        ? undefined
-        : this.locationRepository.findOneByOrFail({
-            id: values.locationId,
-          }),
-      values.responsibleId === undefined
-        ? undefined
-        : this.responsibleRepository.findOneByOrFail({
-            id: values.responsibleId,
-          }),
-      values.assetId === undefined
-        ? undefined
-        : this.itemRepository.findOneByOrFail({ id: values.assetId }),
-    ]);
-
     return {
-      location,
-      responsible,
-      asset,
+      location:
+        values.locationId === undefined ? undefined : { id: values.locationId },
+      responsible:
+        values.responsibleId === undefined
+          ? undefined
+          : { id: values.responsibleId },
+      asset: values.assetId === undefined ? undefined : { id: values.assetId },
       serialNumber: values.serialNumber === '' ? null : values.serialNumber,
       description: values.description === '' ? null : values.description,
     };
