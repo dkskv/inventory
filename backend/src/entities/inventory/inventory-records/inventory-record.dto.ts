@@ -10,6 +10,7 @@ import { LocationDto } from 'src/entities/catalogs/locations/location.dto';
 import { ResponsibleDto } from 'src/entities/catalogs/responsibles/responsible.dto';
 import { PagedArrayClassOf } from 'src/shared/dto/paged.dto';
 import { Filtration } from './inventory-record.service';
+import { StatusDto } from 'src/entities/catalogs/statuses/status.dto';
 
 @InputType()
 export class InventoryRecordsFiltrationInput implements Filtration {
@@ -27,6 +28,9 @@ export class InventoryRecordsFiltrationInput implements Filtration {
 
   @Field(() => String, { nullable: true })
   descriptionSearchText?: string;
+
+  @Field(() => [Int], { nullable: true })
+  statusesIds?: number[];
 }
 
 @ObjectType()
@@ -51,6 +55,9 @@ export class InventoryRecordDto extends BaseInventoryRecordDto {
 
   @Field(() => String, { nullable: true })
   description: string | null;
+
+  @Field(() => [StatusDto])
+  statuses: StatusDto[];
 }
 
 @ObjectType()

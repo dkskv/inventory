@@ -32,6 +32,7 @@ import {
 } from "@/features/current-user-with-privileges";
 import { Privilege } from "@/gql/graphql";
 import i18n from "./i18n";
+import { StatusesPage } from "@/pages/catalogs/statuses";
 
 const Catalog = () => {
   const { t } = useTranslation();
@@ -55,6 +56,12 @@ const Catalog = () => {
           label: t("responsibles"),
           path: "responsibles",
           element: <ResponsiblesPage />,
+        },
+
+        {
+          label: t("statuses"),
+          path: "statuses",
+          element: <StatusesPage />,
         },
       ]}
     />

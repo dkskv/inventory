@@ -6,6 +6,7 @@ import {
   InventoryRecordsFiltrationInput,
   LocationDto,
   ResponsibleDto,
+  StatusDto,
 } from "@/gql/graphql";
 import { ConfigDelete } from "@/shared/ui";
 import { Form, Input, InputNumber } from "antd";
@@ -23,6 +24,7 @@ type FormData = {
   location: LocationDto;
   responsible: ResponsibleDto;
   description?: string;
+  statuses: StatusDto[];
 };
 
 type Config = ConfigDelete<InventoryRecordOrGroupDto, FormData>;
@@ -78,6 +80,14 @@ export const useConfigDelete = (
         name="serialNumber"
       >
         <Input disabled={true} />
+      </Form.Item>
+      <Form.Item<FormData> label={t("statuses")} name="statuses">
+        <FetchSelect<StatusDto, true>
+          disabled
+          multiple
+          renderLabel={({ name }) => name}
+          fetchEntities={() => Promise.resolve([])}
+        />
       </Form.Item>
       <Form.Item<FormData> label={t("location")} name="location">
         <FetchSelect<LocationDto>

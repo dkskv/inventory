@@ -24,7 +24,7 @@ export const withPaging = async <T extends ObjectLiteral>(
         `COUNT(DISTINCT ROW(${groupBys.map(
           escapeAttr(totalBuilder),
         )}))::integer`,
-        'count',
+        'totalCount',
       )
       // Удаление ненужных частей запроса
       .groupBy()
@@ -32,7 +32,7 @@ export const withPaging = async <T extends ObjectLiteral>(
       .limit()
       .take();
 
-    return (await totalBuilder.getRawOne()).count;
+    return (await totalBuilder.getRawOne()).totalCount;
   };
 
   const [items, totalCount] = await Promise.all([

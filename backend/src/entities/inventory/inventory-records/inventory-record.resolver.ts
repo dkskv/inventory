@@ -76,13 +76,16 @@ export class InventoryRecordResolver {
     @Args('assetId', { type: () => Int }) assetId: number,
     @Args('serialNumber', { nullable: true }) serialNumber: string,
     @Args('description', { nullable: true }) description: string,
+    @Args('statusesIds', { type: () => [Int], nullable: true })
+    statusesIds?: number[],
   ): Promise<boolean> {
-    const baseEntity = await this.inventoryRecordService.prepareBaseEntity({
+    const baseEntity = this.inventoryRecordService.prepareBaseEntity({
       locationId,
       responsibleId,
       assetId,
       serialNumber,
       description,
+      statusesIds,
     });
 
     await this.inventoryRecordService.create(currentUserId, baseEntity);
@@ -100,12 +103,15 @@ export class InventoryRecordResolver {
     @Args('assetId', { type: () => Int }) assetId: number,
     @Args('count', { type: () => Int }) count: number,
     @Args('description', { nullable: true }) description: string,
+    @Args('statusesIds', { type: () => [Int], nullable: true })
+    statusesIds?: number[],
   ): Promise<boolean> {
-    const baseEntity = await this.inventoryRecordService.prepareBaseEntity({
+    const baseEntity = this.inventoryRecordService.prepareBaseEntity({
       locationId,
       responsibleId,
       assetId,
       description,
+      statusesIds,
     });
 
     await this.inventoryRecordService.create(currentUserId, baseEntity, count);
@@ -123,15 +129,22 @@ export class InventoryRecordResolver {
     @Args('responsibleId', { type: () => Int }) responsibleId: number,
     @Args('serialNumber', { nullable: true }) serialNumber: string,
     @Args('description', { nullable: true }) description: string,
+    @Args('statusesIds', { type: () => [Int], nullable: true })
+    statusesIds?: number[],
   ): Promise<boolean> {
-    const baseEntity = await this.inventoryRecordService.prepareBaseEntity({
+    const baseEntity = this.inventoryRecordService.prepareBaseEntity({
       locationId,
       responsibleId,
       serialNumber,
       description,
+      statusesIds,
     });
 
-    await this.inventoryRecordService.update(currentUserId, id, baseEntity);
+    await this.inventoryRecordService.updateByFiltration(
+      currentUserId,
+      { ids: [id] },
+      baseEntity,
+    );
 
     return true;
   }
@@ -147,14 +160,21 @@ export class InventoryRecordResolver {
     @Args('responsibleId', { type: () => Int, nullable: true })
     responsibleId?: number,
     @Args('description', { nullable: true }) description?: string,
+    @Args('statusesIds', { type: () => [Int], nullable: true })
+    statusesIds?: number[],
   ): Promise<boolean> {
-    const baseEntity = await this.inventoryRecordService.prepareBaseEntity({
+    const baseEntity = this.inventoryRecordService.prepareBaseEntity({
       locationId,
       responsibleId,
       description,
+      statusesIds,
     });
 
-    await this.inventoryRecordService.update(currentUserId, ids, baseEntity);
+    await this.inventoryRecordService.updateByFiltration(
+      currentUserId,
+      { ids },
+      baseEntity,
+    );
 
     return true;
   }
@@ -169,11 +189,14 @@ export class InventoryRecordResolver {
     @Args('responsibleId', { type: () => Int, nullable: true })
     responsibleId?: number,
     @Args('description', { nullable: true }) description?: string,
+    @Args('statusesIds', { type: () => [Int], nullable: true })
+    statusesIds?: number[],
   ): Promise<boolean> {
-    const baseEntity = await this.inventoryRecordService.prepareBaseEntity({
+    const baseEntity = this.inventoryRecordService.prepareBaseEntity({
       locationId,
       responsibleId,
       description,
+      statusesIds,
     });
 
     await this.inventoryRecordService.updateByFiltration(
@@ -191,7 +214,7 @@ export class InventoryRecordResolver {
   async deleteInventoryRecordsBatch(
     @Args('ids', { type: () => [Int] }) ids: number[],
   ) {
-    await this.inventoryRecordService.delete(ids);
+    await this.inventoryRecordService.deleteByFiltration({ ids });
 
     return true;
   }

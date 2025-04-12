@@ -6,6 +6,8 @@ import {
   PagingInput,
   ResponsibleDto,
   ResponsiblesDocument,
+  StatusDto,
+  StatusesDocument,
 } from "@/gql/graphql";
 import { useLazyQuery } from "@apollo/client";
 import { useCallback } from "react";
@@ -16,6 +18,7 @@ export interface CatalogEntitiesFetchers {
   fetchAssets(searchText: string): Promise<AssetDto[]>;
   fetchLocations(searchText: string): Promise<LocationDto[]>;
   fetchResponsibles(searchText: string): Promise<ResponsibleDto[]>;
+  fetchStatuses(searchText: string): Promise<StatusDto[]>;
 }
 
 export const useCatalogEntitiesFetchers = () => {
@@ -26,6 +29,9 @@ export const useCatalogEntitiesFetchers = () => {
     fetchPolicy: "network-only",
   });
   const [executeResponsiblesQuery] = useLazyQuery(ResponsiblesDocument, {
+    fetchPolicy: "network-only",
+  });
+  const [executeStatusesQuery] = useLazyQuery(StatusesDocument, {
     fetchPolicy: "network-only",
   });
 
@@ -53,5 +59,18 @@ export const useCatalogEntitiesFetchers = () => {
     [executeResponsiblesQuery]
   );
 
-  return { fetchAssets, fetchLocations, fetchResponsibles } as const;
+  const fetchStatuses = useCallback(
+    (searchText: string) =>
+      executeStatusesQuery({
+        variables: { paging, filtration: { searchText } },
+      }).then(({ data }) => data!.statuses.items),
+    [executeStatusesQuery]
+  );
+
+  return {
+    fetchAssets,
+    fetchLocations,
+    fetchResponsibles,
+    fetchStatuses,
+  } as const;
 };

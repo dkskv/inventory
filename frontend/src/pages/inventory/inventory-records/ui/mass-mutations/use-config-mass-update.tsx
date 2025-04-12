@@ -21,7 +21,7 @@ export const useConfigMassUpdate = (
   selectedIds: number[] | undefined,
   entitiesFetchers: Pick<
     CatalogEntitiesFetchers,
-    "fetchLocations" | "fetchResponsibles"
+    "fetchLocations" | "fetchResponsibles" | "fetchStatuses"
   >,
   onAfterSave: () => void
 ) => {

@@ -1,7 +1,15 @@
 import { Asset } from 'src/entities/catalogs/assets/asset.entity';
 import { Location } from 'src/entities/catalogs/locations/location.entity';
 import { Responsible } from 'src/entities/catalogs/responsibles/responsible.entity';
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import { Status } from 'src/entities/catalogs/statuses/status.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  Column,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 export class InventoryRecord {
@@ -22,4 +30,8 @@ export class InventoryRecord {
 
   @Column({ type: 'text', nullable: true })
   description: string | null;
+
+  @ManyToMany(() => Status, { eager: true })
+  @JoinTable()
+  statuses: Status[];
 }

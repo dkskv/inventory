@@ -1,11 +1,11 @@
 import {
   InventoryRecordByIdDocument,
-  InventoryRecordDto,
   InventoryRecordsDocument,
 } from "@/gql/graphql";
 import { useLazyQuery } from "@apollo/client";
 import isInteger from "lodash/isInteger";
 import { useCallback } from "react";
+import { InventoryRecordPartialDto } from "./dto";
 
 export const useFetchInventoryRecords = () => {
   const [executeInventoryRecordByIdQuery] = useLazyQuery(
@@ -18,7 +18,7 @@ export const useFetchInventoryRecords = () => {
   );
 
   return useCallback(
-    (searchIdText: string): Promise<InventoryRecordDto[]> => {
+    (searchIdText: string): Promise<InventoryRecordPartialDto[]> => {
       const id = searchIdText ? Number(searchIdText) : undefined;
 
       return id !== undefined && isInteger(id)

@@ -4,6 +4,7 @@ import {
   InventoryRecordsFiltrationInput,
   LocationDto,
   ResponsibleDto,
+  StatusDto,
   UpdateInventoryRecordDocument,
   UpdateInventoryRecordsByFiltrationDocument,
 } from "@/gql/graphql";
@@ -14,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation } from "@apollo/client";
 import { CatalogEntitiesFetchers } from "../../api";
 import TextArea from "antd/es/input/TextArea";
+import { areSameEntities } from "@/features/entities-comparison";
 
 type FormData = {
   count?: number;
@@ -22,6 +24,7 @@ type FormData = {
   responsible: ResponsibleDto;
   location: LocationDto;
   description?: string;
+  statuses?: StatusDto[];
 };
 
 type Config = ConfigUpdate<InventoryRecordOrGroupDto, FormData>;
@@ -29,7 +32,7 @@ type Config = ConfigUpdate<InventoryRecordOrGroupDto, FormData>;
 export const useConfigUpdate = (
   entitiesFetchers: Pick<
     CatalogEntitiesFetchers,
-    "fetchLocations" | "fetchResponsibles"
+    "fetchLocations" | "fetchResponsibles" | "fetchStatuses"
   >,
   filtration: InventoryRecordsFiltrationInput
 ): Config => {
@@ -45,6 +48,7 @@ export const useConfigUpdate = (
       locationId: formData.location.id,
       responsibleId: formData.responsible.id,
       description: formData.description,
+      statusesIds: formData.statuses?.map((s) => s.id),
     };
 
     return isGroup(entity)
@@ -73,6 +77,7 @@ export const useConfigUpdate = (
     count: isGroup(entity) ? entity.count : undefined,
     serialNumber: isGroup(entity) ? undefined : entity.serialNumber ?? "",
     description: isGroup(entity) ? undefined : entity.description ?? "",
+    statuses: isGroup(entity) ? undefined : entity.statuses,
   });
 
   const renderFormContent: Config["renderFormContent"] = (_, entity) => (
@@ -97,6 +102,17 @@ export const useConfigUpdate = (
         name="serialNumber"
       >
         <Input />
+      </Form.Item>
+      <Form.Item<FormData>
+        hidden={isGroup(entity)}
+        label={t("statuses")}
+        name="statuses"
+      >
+        <FetchSelect
+          multiple
+          renderLabel={({ name }) => name}
+          fetchEntities={entitiesFetchers.fetchStatuses}
+        />
       </Form.Item>
       <Form.Item<FormData>
         label={t("location")}
@@ -128,7 +144,8 @@ export const useConfigUpdate = (
     a.location?.id === b.location?.id &&
     a.responsible?.id === b.responsible?.id &&
     (a.serialNumber ?? "").trim() === (b.serialNumber ?? "").trim() &&
-    (a.description ?? "").trim() === (b.description ?? "").trim();
+    (a.description ?? "").trim() === (b.description ?? "").trim() &&
+    areSameEntities(a.statuses ?? [], b.statuses ?? []);
 
   return { prepareForEditor, renderFormContent, isEqual, onApply };
 };

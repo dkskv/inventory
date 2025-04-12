@@ -68,6 +68,17 @@ type ResponsiblePagedArrayDto {
   totalCount: Int!
 }
 
+type StatusDto {
+  id: Int!
+  name: String!
+  color: String!
+}
+
+type StatusPagedArrayDto {
+  items: [StatusDto!]!
+  totalCount: Int!
+}
+
 type InventoryRecordDto {
   location: LocationDto!
   asset: AssetDto!
@@ -75,6 +86,7 @@ type InventoryRecordDto {
   id: Int!
   serialNumber: String
   description: String
+  statuses: [StatusDto!]!
 }
 
 type InventoryRecordsDetailedGroupDto {
@@ -169,6 +181,7 @@ type Query {
   assets(paging: PagingInput!, filtration: CatalogFiltrationInput): AssetPagedArrayDto!
   locations(paging: PagingInput!, filtration: CatalogFiltrationInput): LocationPagedArrayDto!
   responsibles(paging: PagingInput!, filtration: CatalogFiltrationInput): ResponsiblePagedArrayDto!
+  statuses(paging: PagingInput!, filtration: CatalogFiltrationInput): StatusPagedArrayDto!
   inventoryRecordsOrGroups(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsOrGroupsPagedDto!
   inventoryRecords(paging: PagingInput!, filtration: InventoryRecordsFiltrationInput): InventoryRecordsPagedDto!
   inventoryRecordsDetailedGroups(filtration: InventoryRecordsFiltrationInput): [InventoryRecordsDetailedGroupDto!]!
@@ -196,6 +209,7 @@ input InventoryRecordsFiltrationInput {
   responsibleIds: [Int!]
   serialNumberSearchText: String
   descriptionSearchText: String
+  statusesIds: [Int!]
 }
 
 input InventoryLogsFiltrationInput {
@@ -224,11 +238,14 @@ type Mutation {
   createResponsible(name: String!): Boolean!
   updateResponsible(id: Int!, name: String!): Boolean!
   deleteResponsible(id: Int!): Boolean!
-  createInventoryRecord(locationId: Int!, responsibleId: Int!, assetId: Int!, serialNumber: String, description: String): Boolean!
-  createInventoryRecordsBatch(locationId: Int!, responsibleId: Int!, assetId: Int!, count: Int!, description: String): Boolean!
-  updateInventoryRecord(id: Int!, locationId: Int!, responsibleId: Int!, serialNumber: String, description: String): Boolean!
-  updateInventoryRecordsBatch(ids: [Int!]!, locationId: Int, responsibleId: Int, description: String): Boolean!
-  updateInventoryRecordsByFiltration(filtration: InventoryRecordsFiltrationInput!, locationId: Int, responsibleId: Int, description: String): Boolean!
+  createStatus(name: String!, color: String!): Boolean!
+  updateStatus(id: Int!, name: String, color: String): Boolean!
+  deleteStatus(id: Int!): Boolean!
+  createInventoryRecord(locationId: Int!, responsibleId: Int!, assetId: Int!, serialNumber: String, description: String, statusesIds: [Int!]): Boolean!
+  createInventoryRecordsBatch(locationId: Int!, responsibleId: Int!, assetId: Int!, count: Int!, description: String, statusesIds: [Int!]): Boolean!
+  updateInventoryRecord(id: Int!, locationId: Int!, responsibleId: Int!, serialNumber: String, description: String, statusesIds: [Int!]): Boolean!
+  updateInventoryRecordsBatch(ids: [Int!]!, locationId: Int, responsibleId: Int, description: String, statusesIds: [Int!]): Boolean!
+  updateInventoryRecordsByFiltration(filtration: InventoryRecordsFiltrationInput!, locationId: Int, responsibleId: Int, description: String, statusesIds: [Int!]): Boolean!
   deleteInventoryRecordsBatch(ids: [Int!]!): Boolean!
   deleteInventoryRecordsByFiltration(filtration: InventoryRecordsFiltrationInput!): Boolean!
 }

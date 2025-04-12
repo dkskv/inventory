@@ -35,6 +35,11 @@ query InventoryRecordsOrGroups(
         }
         serialNumber
         description
+        statuses {
+          id
+          name
+          color
+        }
       }
     }
     totalCount
@@ -62,6 +67,11 @@ query InventoryRecords(
       }
       serialNumber
       description
+      statuses {
+        id
+        name
+        color
+      }
     }
     totalCount
   }
@@ -100,7 +110,6 @@ query InventoryRecordById($id: Int!) {
       id
       name
     }
-    serialNumber
   }
 }
 
@@ -110,6 +119,7 @@ mutation CreateInventoryRecord(
   $assetId: Int!
   $serialNumber: String
   $description: String
+  $statusesIds: [Int!]
 ) {
   createInventoryRecord(
     locationId: $locationId
@@ -117,6 +127,7 @@ mutation CreateInventoryRecord(
     assetId: $assetId
     serialNumber: $serialNumber
     description: $description
+    statusesIds: $statusesIds
   )
 }
 
@@ -126,6 +137,7 @@ mutation CreateInventoryRecordsBatch(
   $assetId: Int!
   $count: Int!
   $description: String
+  $statusesIds: [Int!]
 ) {
   createInventoryRecordsBatch(
     locationId: $locationId
@@ -133,6 +145,7 @@ mutation CreateInventoryRecordsBatch(
     assetId: $assetId
     count: $count
     description: $description
+    statusesIds: $statusesIds
   )
 }
 
@@ -142,6 +155,7 @@ mutation UpdateInventoryRecord(
   $responsibleId: Int!
   $serialNumber: String
   $description: String
+  $statusesIds: [Int!]
 ) {
   updateInventoryRecord(
     id: $id
@@ -149,6 +163,7 @@ mutation UpdateInventoryRecord(
     responsibleId: $responsibleId
     serialNumber: $serialNumber
     description: $description
+    statusesIds: $statusesIds
   )
 }
 
@@ -157,12 +172,14 @@ mutation UpdateInventoryRecordsBatch(
   $locationId: Int
   $responsibleId: Int
   $description: String
+  $statusesIds: [Int!]
 ) {
   updateInventoryRecordsBatch(
     ids: $ids
     locationId: $locationId
     responsibleId: $responsibleId
     description: $description
+    statusesIds: $statusesIds
   )
 }
 
@@ -171,12 +188,14 @@ mutation UpdateInventoryRecordsByFiltration(
   $locationId: Int!
   $responsibleId: Int!
   $description: String
+  $statusesIds: [Int!]
 ) {
   updateInventoryRecordsByFiltration(
     filtration: $filtration
     locationId: $locationId
     responsibleId: $responsibleId
     description: $description
+    statusesIds: $statusesIds
   )
 }
 

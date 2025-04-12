@@ -4,6 +4,7 @@ import {
   CreateInventoryRecordsBatchDocument,
   LocationDto,
   ResponsibleDto,
+  StatusDto,
 } from "@/gql/graphql";
 import { ConfigCreate } from "@/shared/ui";
 import { FetchSelect } from "@/shared/ui";
@@ -21,6 +22,7 @@ type FormData = {
   location: LocationDto;
   responsible: ResponsibleDto;
   description?: string;
+  statuses?: StatusDto[];
 };
 
 type LockerFormData = Pick<FormData, "asset" | "location" | "responsible">;
@@ -47,6 +49,7 @@ export const useConfigCreate = (
       locationId: formData.location.id,
       responsibleId: formData.responsible.id,
       description: formData.description,
+      statusesIds: formData.statuses?.map((s) => s.id),
     };
 
     return isBatchCount(formData.count)
@@ -89,6 +92,13 @@ export const useConfigCreate = (
         name="serialNumber"
       >
         <Input />
+      </Form.Item>
+      <Form.Item<FormData> label={t("statuses")} name="statuses">
+        <FetchSelect
+          multiple
+          renderLabel={({ name }) => name}
+          fetchEntities={entitiesFetchers.fetchStatuses}
+        />
       </Form.Item>
       <Form.Item<FormData>
         label={t("location")}

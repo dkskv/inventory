@@ -18,6 +18,7 @@ import {
   type EnvVariables,
 } from '../shared/env-validation';
 import { StaticModule } from './serve-static/serve-static.module';
+import { StatusModule } from './entities/catalogs/statuses/status.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { StaticModule } from './serve-static/serve-static.module';
     AssetModule,
     LocationModule,
     ResponsibleModule,
+    StatusModule,
     InventoryRecordModule,
     InventoryLogModule,
     SeedModule,

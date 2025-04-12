@@ -37,6 +37,9 @@
   "newValue": "Новое значение",
   "accessRole": "Роль доступа",
   "description": "Описание",
+  "status": "Статус",
+  "statuses": "Статусы",
+  "color": "Цвет",
   "validation": {
     "password": {
       "minLength": "Пароль должен содержать минимум 8 символов",

@@ -7,11 +7,13 @@ import {
   FetchSelect,
   ToggleSearch,
   Ellipsis,
+  Tag,
 } from "@/shared/ui";
 import { CatalogEntitiesFetchers, isGroup } from "../../api";
 import { CatalogEntityFilterStore, FiltersStore } from "../../model";
 import { Link } from "react-router";
 import { usePrimaryColumn } from "@/widgets/grouped-table";
+import { Flex } from "antd";
 
 interface Params {
   activeGroup: InventoryRecordsGroupDto | undefined;
@@ -50,10 +52,6 @@ export const useColumns = ({
     fetchEntities: (searchText: string) => Promise<Entity[]>,
     filterStore: CatalogEntityFilterStore<Entity>
   ) => {
-    if (activeGroup) {
-      return title;
-    }
-
     const filterValue = filterStore.getItems();
 
     const renderPopoverContent = () => (
@@ -85,11 +83,13 @@ export const useColumns = ({
     {
       width: 250,
       key: "asset",
-      title: renderFilterTitle(
-        t("asset"),
-        catalogEntitiesFetchers.fetchAssets,
-        filtersStore.assets
-      ),
+      title: activeGroup
+        ? t("asset")
+        : renderFilterTitle(
+            t("asset"),
+            catalogEntitiesFetchers.fetchAssets,
+            filtersStore.assets
+          ),
       render(_, { entity }) {
         return entity.asset.name;
       },
@@ -106,32 +106,58 @@ export const useColumns = ({
           />
         </OverCell>
       ),
-      render(_value, record) {
-        return isGroup(record.entity) ? null : record.entity.serialNumber;
+      render(_value, { entity }) {
+        return isGroup(entity) ? null : entity.serialNumber;
+      },
+    },
+    {
+      width: 200,
+      key: "statuses",
+      title: renderFilterTitle(
+        t("statuses"),
+        catalogEntitiesFetchers.fetchStatuses,
+        filtersStore.statuses
+      ),
+      render(_, { entity }) {
+        if (isGroup(entity)) {
+          return null;
+        }
+
+        return (
+          <Flex wrap={true} gap={8}>
+            {entity.statuses.map((status) => (
+              <Tag color={status.color}>{status.name}</Tag>
+            ))}
+          </Flex>
+        );
       },
     },
     {
       width: 250,
       key: "location",
-      title: renderFilterTitle(
-        t("location"),
-        catalogEntitiesFetchers.fetchLocations,
-        filtersStore.locations
-      ),
-      render(_value, record) {
-        return record.entity.location.name;
+      title: activeGroup
+        ? t("location")
+        : renderFilterTitle(
+            t("location"),
+            catalogEntitiesFetchers.fetchLocations,
+            filtersStore.locations
+          ),
+      render(_value, { entity }) {
+        return entity.location.name;
       },
     },
     {
       width: 250,
       key: "responsible",
-      title: renderFilterTitle(
-        t("responsible"),
-        catalogEntitiesFetchers.fetchResponsibles,
-        filtersStore.responsibles
-      ),
-      render(_value, record) {
-        return record.entity.responsible.name;
+      title: activeGroup
+        ? t("responsible")
+        : renderFilterTitle(
+            t("responsible"),
+            catalogEntitiesFetchers.fetchResponsibles,
+            filtersStore.responsibles
+          ),
+      render(_value, { entity }) {
+        return entity.responsible.name;
       },
     },
     {
@@ -146,10 +172,10 @@ export const useColumns = ({
           />
         </OverCell>
       ),
-      render(_value, record) {
-        return isGroup(record.entity) ? null : (
+      render(_value, { entity }) {
+        return isGroup(entity) ? null : (
           <div style={{ width: 250, minWidth: "100%" }}>
-            <Ellipsis>{record.entity.description}</Ellipsis>
+            <Ellipsis>{entity.description}</Ellipsis>
           </div>
         );
       },

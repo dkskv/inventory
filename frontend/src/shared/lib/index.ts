@@ -4,3 +4,4 @@ export * from "./hooks";
 export * from "./persist-storage";
 export * from "./permissions";
 export * from "./has-only-undefined";
+export * from "./color";

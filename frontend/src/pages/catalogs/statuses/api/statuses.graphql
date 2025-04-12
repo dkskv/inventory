@@ -1,0 +1,22 @@
+mutation CreateStatus($name: String!, $color: String!) {
+  createStatus(name: $name, color: $color)
+}
+
+mutation UpdateStatus($id: Int!, $name: String, $color: String) {
+  updateStatus(id: $id, name: $name, color: $color)
+}
+
+mutation DeleteStatus($id: Int!) {
+  deleteStatus(id: $id)
+}
+
+query Statuses($paging: PagingInput!, $filtration: CatalogFiltrationInput) {
+  statuses(paging: $paging, filtration: $filtration) {
+    items {
+      id
+      name
+      color
+    }
+    totalCount
+  }
+}

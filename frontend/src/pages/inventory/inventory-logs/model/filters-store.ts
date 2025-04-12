@@ -6,19 +6,39 @@ import { action, comparer, computed, IReactionDisposer } from "mobx";
 import { useLocation } from "react-router";
 import { useEffect, useMemo } from "react";
 import { hasOnlyUndefined, PersistStorage } from "@/shared/lib";
-import { inventoryRecordSchema } from "@/entities/inventiory-record";
 import { z } from "zod";
 import { SingleDtoFilterStore } from "./single-dto-filter-store";
+import { InventoryRecordPartialDto } from "../api";
 
 interface PersistValue {
-  inventoryRecord?: InventoryRecordDto;
+  inventoryRecord?: InventoryRecordPartialDto;
 }
 
 export class FiltersStore {
   public inventoryRecordFilterStore =
-    new SingleDtoFilterStore<InventoryRecordDto>();
+    new SingleDtoFilterStore<InventoryRecordPartialDto>();
 
   private persist: PersistStorage<PersistValue>;
+
+  private inventoryRecordSchema = z.object({
+    id: z.number(),
+    asset: z.object({
+      id: z.number(),
+      name: z.string(),
+      __typename: z.literal("AssetDto").optional(),
+    }),
+    location: z.object({
+      id: z.number(),
+      name: z.string(),
+      __typename: z.literal("LocationDto").optional(),
+    }),
+    responsible: z.object({
+      id: z.number(),
+      name: z.string(),
+      __typename: z.literal("ResponsibleDto").optional(),
+    }),
+    __typename: z.literal("InventoryRecordDto").optional(),
+  });
 
   constructor(persistKey: string) {
     this.persist = new PersistStorage(persistKey);
@@ -38,7 +58,7 @@ export class FiltersStore {
   restoreFromHistoryState(stateUnvalidated: {
     inventoryRecord: InventoryRecordDto;
   }) {
-    const parseResult = inventoryRecordSchema.safeParse(
+    const parseResult = this.inventoryRecordSchema.safeParse(
       stateUnvalidated.inventoryRecord
     );
 
@@ -68,7 +88,7 @@ export class FiltersStore {
   restoreFromPersist() {
     const persistValue = this.persist.restore(
       z.object({
-        inventoryRecord: inventoryRecordSchema.optional(),
+        inventoryRecord: this.inventoryRecordSchema.optional(),
       })
     );
 

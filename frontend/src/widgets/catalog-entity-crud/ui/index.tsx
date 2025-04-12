@@ -7,8 +7,8 @@ import {
   EntityCrudProps,
 } from "@/shared/ui";
 import identity from "lodash/identity";
-import { useCallback, useState } from "react";
-import { useDelayedValue } from "@/shared/lib";
+import { useCallback } from "react";
+import { useSearchInput } from "./use-search-input";
 import { PagingInput } from "@/gql/graphql";
 import { useTranslation } from "react-i18next";
 
@@ -39,13 +39,11 @@ export const CatalogEntityCrud = <T extends CatalogEntity>({
   ...props
 }: Props<T>) => {
   const { t } = useTranslation();
-
-  const [searchText, setSearchText] = useState("");
-  const debouncedSearchText = useDelayedValue(searchText, 500) ?? searchText;
+  const searchInput = useSearchInput();
 
   const read = useCallback(
-    (padding: PagingInput) => propsRead(padding, debouncedSearchText),
-    [propsRead, debouncedSearchText]
+    (padding: PagingInput) => propsRead(padding, searchInput.searchText),
+    [propsRead, searchInput.searchText]
   );
 
   const configCreate: ConfigCreate<FormData> = {
@@ -116,16 +114,8 @@ export const CatalogEntityCrud = <T extends CatalogEntity>({
       configCreate={configCreate}
       configUpdate={configUpdate}
       configDelete={configDelete}
-      getKey={(entity) => String(entity.id)}
-      renderExtraContent={() => (
-        <Input
-          style={{ maxWidth: 300 }}
-          placeholder={t("enterName")}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          allowClear={true}
-        />
-      )}
+      getKey={(entity) => entity.id}
+      renderExtraContent={searchInput.render}
     />
   );
 };

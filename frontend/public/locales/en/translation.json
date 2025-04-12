@@ -37,6 +37,9 @@
   "newValue": "New value",
   "accessRole": "Access role",
   "description": "Description",
+  "status": "Status",
+  "statuses": "Statuses",
+  "color": "Color",
   "validation": {
     "password": {
       "minLength": "Password must be at least 8 characters long",

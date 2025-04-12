@@ -153,7 +153,7 @@ export class InventoryLogService {
     };
 
     const items = (rawItems as RawItem[]).map((item) =>
-      item.count > 1 ? omit(item, ['id', 'inventoryRecordId']) : omit(item),
+      item.count > 1 ? omit(item, ['id', 'inventoryRecordId']) : item,
     );
 
     const { locations: usedLocations, responsibles: usedResponsibles } =

@@ -8,3 +8,4 @@ export * from "./toggle-search";
 export * from "./theme-mode-switch";
 export * from "./ellipsis";
 export * from "./smooth-routes";
+export * from "./tag";
