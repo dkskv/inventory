@@ -17,9 +17,9 @@ fi
 
 echo "♻ Восстанавливаем базу '$DB_NAME' из backup-файла..."
 
-cat "$BACKUP_FILE" | docker exec -i \
-  env PGPASSWORD="$DB_PASSWORD" \
-  "$CONTAINER_NAME" pg_restore --clean -U "$DB_USER" -d "$DB_NAME"
+cat "$BACKUP_FILE" | docker exec -i "$CONTAINER_NAME" \
+ env PGPASSWORD="$DB_PASSWORD" \
+ pg_restore --clean -U "$DB_USER" -d "$DB_NAME"
 
 if [ $? -eq 0 ]; then
   echo "✅ Восстановление успешно завершено!"
