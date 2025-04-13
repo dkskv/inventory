@@ -48,5 +48,6 @@
       "digit": "Password must contain at least one digit",
       "specialChar": "Password must contain at least one special character"
     }
-  }
+  },
+  "status-logging-is-not-supported-yet": "Status logging is not supported yet"
 }
