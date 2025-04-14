@@ -2,15 +2,12 @@ import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useFiltersStore } from "../model";
 import { InventoryLogsGroupPartialDto } from "../api";
-import {
-  useDelayedValue,
-  useDependentState,
-  useLastNonNullable,
-} from "@/shared/lib";
-import { SwitchOnReady } from "@/shared/ui";
+import { useDependentState, useLastNonNullable } from "@/shared/lib";
+import { useDelayedValue } from "react-when-ready";
 import { InventoryLogOrGroupCrud, InventoryLogsGroupCrud } from "../cruds";
 import { Alert } from "antd";
 import { useTranslation } from "react-i18next";
+import { SwitchWhenReady } from "@/shared/ui";
 
 const InventoryLogsPageComponent = () => {
   const { t } = useTranslation();
@@ -31,7 +28,7 @@ const InventoryLogsPageComponent = () => {
         message={t("status-logging-is-not-supported-yet")}
         type="warning"
       />
-      <SwitchOnReady
+      <SwitchWhenReady
         activeKey={activeGroup ? "GROUP" : "ROOT"}
         renderByKey={(key) => {
           const commonProps = {

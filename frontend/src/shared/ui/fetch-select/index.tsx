@@ -1,7 +1,7 @@
 import { Empty, Select, SelectProps, Spin } from "antd";
 import { useCallback, useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import { useDelayedLoading } from "@/shared/lib";
+import { useDelayedLoading } from "react-when-ready";
 import isNil from "lodash/isNil";
 
 interface FetchSelectProps<Entity, Multiple extends boolean>
@@ -55,7 +55,7 @@ export function FetchSelect<
 
   const fetchRef = useRef(0);
   const [fetching, setFetching] = useState(false);
-  const fetchingDebounced = useDelayedLoading(fetching);
+  const fetchingDebounced = useDelayedLoading(fetching, 500);
 
   const fetcher = useCallback(
     (searchText: string) => {

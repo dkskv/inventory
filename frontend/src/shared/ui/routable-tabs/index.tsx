@@ -1,6 +1,6 @@
 import { Flex, Tabs } from "antd";
 import { matchPath, Navigate, useLocation, useNavigate } from "react-router";
-import { SwitchOnReady } from "../switch-on-ready";
+import { SwitchWhenReady } from "../switch-when-ready";
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import { useMatchedByPath } from "@/shared/lib";
 
@@ -51,7 +51,7 @@ export const RoutableTabs: React.FC<RoutableTabsProps> = ({
         items={items.map(({ label, path }) => ({ label, key: path }))}
         size={size}
       />
-      <SwitchOnReady
+      <SwitchWhenReady
         activeKey={activeItem?.path}
         renderByKey={(pattern) => findItemByPattern(pattern)?.element}
       />

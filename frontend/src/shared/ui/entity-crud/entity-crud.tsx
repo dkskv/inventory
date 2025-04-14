@@ -10,13 +10,13 @@ import {
   PaginationParams,
   useDependentState,
 } from "@/shared/lib";
-import { useReadinessOnCondition } from "../switch-on-ready";
 import { OverCell } from "../over-cell";
 import { UpdateAndDeleteActions } from "./update-and-delete-actions";
 import { useTranslation } from "react-i18next";
 import { Key } from "antd/es/table/interface";
 import { EditorsConfigs, useEditors } from "./hooks";
-import { useDelayedLoading, useFetchHelper } from "@/shared/lib";
+import { useFetchHelper } from "@/shared/lib";
+import { useDelayedLoading, useReadinessOnCondition } from "react-when-ready";
 
 interface Record<T> {
   entity: T;
@@ -143,7 +143,7 @@ export const EntityCrud = <
     return result;
   })();
 
-  const delayedLoading = useDelayedLoading(isLoading);
+  const delayedLoading = useDelayedLoading(isLoading, 500);
 
   if (!data) {
     return delayedLoading ? (

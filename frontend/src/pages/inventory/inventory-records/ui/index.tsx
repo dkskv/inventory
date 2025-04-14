@@ -5,7 +5,7 @@ import {
 } from "@/gql/graphql";
 import { Button, Flex } from "antd";
 import { useRef, useState } from "react";
-import { EntityCrudApi, SwitchOnReady } from "@/shared/ui";
+import { EntityCrudApi, SwitchWhenReady } from "@/shared/ui";
 import { observer } from "mobx-react-lite";
 import { useTranslation } from "react-i18next";
 import { generateGroupKey, useFiltersStore } from "../model";
@@ -14,7 +14,6 @@ import { useCatalogEntitiesFetchers, isGroup } from "../api";
 import { useRowSelection } from "./use-row-selection";
 import {
   Permission,
-  useDelayedValue,
   useDependentState,
   useLastNonNullable,
 } from "@/shared/lib";
@@ -22,6 +21,7 @@ import { usePermissions } from "@/features/current-user-with-privileges";
 import { useExportDetailedGroups } from "./use-export-detailed-groups";
 import FileExcelOutlined from "@ant-design/icons/FileExcelOutlined";
 import { InventoryRecordOrGroupCrud, InventoryRecordsGroupCrud } from "./cruds";
+import { useDelayedValue } from "react-when-ready";
 
 function InventoryRecordsPageComponent() {
   const { t } = useTranslation();
@@ -75,7 +75,7 @@ function InventoryRecordsPageComponent() {
   };
 
   return (
-    <SwitchOnReady
+    <SwitchWhenReady
       activeKey={activeGroup ? "GROUP" : "ROOT"}
       renderByKey={(key) => {
         const commonProps = {

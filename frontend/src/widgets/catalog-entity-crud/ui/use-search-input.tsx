@@ -1,4 +1,4 @@
-import { useDelayedValue } from "@/shared/lib";
+import { useDelayedValue } from "react-when-ready";
 import { Input } from "antd";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";

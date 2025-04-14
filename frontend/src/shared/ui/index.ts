@@ -3,7 +3,7 @@ export * from "./fetch-select";
 export * from "./filter-popover";
 export * from "./over-cell";
 export * from "./routable-tabs";
-export * from "./switch-on-ready";
+export * from "./switch-when-ready";
 export * from "./toggle-search";
 export * from "./theme-mode-switch";
 export * from "./ellipsis";

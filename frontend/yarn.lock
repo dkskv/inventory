@@ -4181,6 +4181,11 @@ react-router@^7.1.1:
     set-cookie-parser "^2.6.0"
     turbo-stream "2.4.0"
 
+react-when-ready@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-when-ready/-/react-when-ready-0.0.3.tgz#bec87194bf75f34b8b10fa3064a4cfbbb59b4849"
+  integrity sha512-GmMaPyu4Lyirl92pdHZuUTS0JoVYkRRoKX1bmZmaasVuD1xaJcixO2SQgXEHGIaeIZwjQiVS6I610cAm8gq6Ug==
+
 react@^18.3.1:
   version "18.3.1"
   resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"

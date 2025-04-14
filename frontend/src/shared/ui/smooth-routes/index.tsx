@@ -1,5 +1,5 @@
 import { useMatchedPath } from "@/shared/lib";
-import { SwitchOnReady } from "../switch-on-ready";
+import { SwitchWhenReady } from "../switch-when-ready";
 
 interface SmoothRoutesProps<Pattern extends string> {
   basePath: string;
@@ -14,7 +14,7 @@ export const SmoothRoutes = <Pattern extends string>({
   const activeRouteKey = useMatchedPath(routesPatterns, basePath);
 
   return (
-    <SwitchOnReady
+    <SwitchWhenReady
       activeKey={activeRouteKey}
       renderByKey={(key) => routes[key]}
     />

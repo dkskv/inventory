@@ -1,10 +1,9 @@
 import {
   createPaginationParams,
-  useDelayedLoading,
   useDependentState,
   useFetchHelper,
 } from "@/shared/lib";
-import { useReadinessOnCondition } from "@/shared/ui";
+import { useReadinessOnCondition, useDelayedLoading } from "react-when-ready";
 import { Table, TablePaginationConfig } from "antd";
 import { useCallback } from "react";
 import { useFetchGroupData, useFetchRootData } from "../api";
@@ -55,7 +54,7 @@ export const InventoryLogOrGroupCrud: React.FC<
   );
 
   useReadinessOnCondition(!!data);
-  const delayedLoading = useDelayedLoading(isLoading);
+  const delayedLoading = useDelayedLoading(isLoading, 500);
 
   const columns = useColumns({
     filtersStore,
@@ -123,7 +122,7 @@ export const InventoryLogsGroupCrud: React.FC<
   );
 
   useReadinessOnCondition(!!data);
-  const delayedLoading = useDelayedLoading(isLoading);
+  const delayedLoading = useDelayedLoading(isLoading, 500);
 
   const columns = useColumns({
     filtersStore,

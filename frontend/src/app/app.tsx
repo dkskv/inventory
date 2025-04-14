@@ -11,11 +11,8 @@ import { ConfigProvider, Layout, message } from "antd";
 import { Content } from "antd/es/layout/layout";
 import { useTranslation } from "react-i18next";
 import { theme } from "antd";
-import {
-  SmoothRoutes,
-  ThemeModeSwitch,
-  useReadinessOnCondition,
-} from "@/shared/ui";
+import { SmoothRoutes, ThemeModeSwitch } from "@/shared/ui";
+import { useReadinessOnCondition } from "react-when-ready";
 import { useCallback, useMemo } from "react";
 import {
   hasPermissions,

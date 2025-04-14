@@ -4,7 +4,7 @@ import { SignInDocument } from "@/gql/graphql";
 import { useNavigate } from "react-router";
 import { saveTokens } from "@/shared/api";
 import { useTranslation } from "react-i18next";
-import { useReadinessOnCondition } from "@/shared/ui";
+import { useReadinessOnCondition } from "react-when-ready";
 
 interface FormData {
   username: string;
