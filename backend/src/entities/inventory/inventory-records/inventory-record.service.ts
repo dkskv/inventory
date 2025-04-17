@@ -65,6 +65,11 @@ export class InventoryRecordService {
     qb: SelectQueryBuilder<InventoryRecord>,
     filtration: Filtration,
   ) {
+    // Защита от случайного изменения всей таблицы
+    if (Object.keys(filtration).length === 0) {
+      throw new Error('Empty filtration');
+    }
+
     const { alias } = qb;
 
     if (filtration.ids?.length) {
@@ -161,7 +166,15 @@ export class InventoryRecordService {
       .addSelect('TO_JSONB(location)', 'location')
       .addSelect('TO_JSONB(responsible)', 'responsible')
       .addSelect(
-        `COALESCE(jsonb_agg(TO_JSONB(status)) FILTER (WHERE status.id IS NOT NULL), '[]'::jsonb)`,
+        `
+        CASE 
+          WHEN COUNT(DISTINCT inventoryRecord.id) > 1 THEN NULL
+          ELSE COALESCE(
+            jsonb_agg(TO_JSONB(status)) FILTER (WHERE status.id IS NOT NULL),
+            '[]'::jsonb
+          )
+        END
+        `,
         'statuses',
       )
 
@@ -186,7 +199,9 @@ export class InventoryRecordService {
     };
 
     const items = (rawItems as RawItem[]).map((item) =>
-      item.count > 1 ? omit(item, ['id']) : omit(item, ['count']),
+      item.count > 1
+        ? omit(item, ['id', 'statuses', 'serialNumber', 'description'])
+        : omit(item, ['count']),
     );
 
     return { items, totalCount };
