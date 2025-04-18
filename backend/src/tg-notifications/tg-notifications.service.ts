@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { Client } from 'pg';
-import insertLogTriggerSql from './sql/insertLogTrigger.sql';
-import dropTriggerSql from './sql/dropTrigger.sql';
+import createTriggerInsertLogSql from './sql/create-trigger-insert-log.sql';
+import dropTriggerSql from './sql/drop-trigger.sql';
 import { InventoryLogService } from 'src/entities/inventory/inventory-log/inventory-log.service';
 import { debounce, isInteger } from 'lodash';
 import { formatLogs } from './format-logs';
@@ -13,7 +13,7 @@ import { EnvVariables } from 'shared/env-validation';
 // todo: подключать модуль условно?
 @Injectable()
 export class TgNotificationsService {
-  private bot: TelegramBot;
+  private bot: TelegramBot | undefined;
   private client: Client;
   private bufferedIds = new Set<number>();
 
@@ -24,7 +24,7 @@ export class TgNotificationsService {
   ) {}
 
   private async createTrigger() {
-    await this.dataSource.query(insertLogTriggerSql);
+    await this.dataSource.query(createTriggerInsertLogSql);
     console.log('Triggers on inventory_log created successfully');
   }
 
@@ -36,7 +36,7 @@ export class TgNotificationsService {
   private sendMessage(message: string) {
     const chatId = this.configService.get('TG_CHAT_ID');
 
-    if (!chatId) {
+    if (!chatId || !this.bot) {
       return;
     }
 
@@ -65,7 +65,7 @@ export class TgNotificationsService {
 
     await this.client.connect();
 
-    this.client.query('LISTEN log_changes');
+    this.client.query('LISTEN event_insert_inventory_log');
 
     this.client.on('notification', async ({ payload }) => {
       const id = Number(payload);
@@ -102,7 +102,7 @@ export class TgNotificationsService {
   }, 1000);
 
   async dispose() {
-    const promises = [this.deleteTrigger(), this.bot.close()];
+    const promises = [this.deleteTrigger(), this.bot?.close()];
 
     if (this.client) {
       promises.push(this.client.end());

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindOptionsWhere, In, IsNull, Repository } from 'typeorm';
 import { InventoryLog } from './inventory-log.entity';
-import insertTriggerSql from './sql/insertTrigger.sql';
-import updateTriggerSql from './sql/updateTrigger.sql';
-import dropTriggersSql from './sql/dropTriggers.sql';
+import createTriggerInsertSql from './sql/create-trigger-insert.sql';
+import createTriggerUpdateSql from './sql/create-trigger-update.sql';
+import dropAllTriggersSql from './sql/drop-all-triggers.sql';
 import { Paging } from 'src/shared/service/paging';
 import { isNil, isNumber, omit } from 'lodash';
 import { LocationService } from 'src/entities/catalogs/locations/location.service';
@@ -35,15 +35,15 @@ export class InventoryLogService {
     private readonly responsibleService: ResponsibleService,
   ) {}
 
-  async createTrigger() {
+  async createTriggers() {
     await this.dataSource.query(
-      [insertTriggerSql, updateTriggerSql].join('\n'),
+      [createTriggerInsertSql, createTriggerUpdateSql].join('\n'),
     );
     console.log('Triggers on inventory_record created successfully');
   }
 
-  async deleteTrigger() {
-    await this.dataSource.query(dropTriggersSql);
+  async dropTriggers() {
+    await this.dataSource.query(dropAllTriggersSql);
     console.log('Triggers on inventory_record deleted successfully');
   }
 

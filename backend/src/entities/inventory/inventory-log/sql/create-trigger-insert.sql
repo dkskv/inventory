@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION log_inventory_insert()
+CREATE OR REPLACE FUNCTION log_insert_inventory_record()
 RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO inventory_log (timestamp, "authorId", action, "inventoryRecordId", "nextValue")
@@ -18,7 +18,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER trigger_inventory_insert
+CREATE OR REPLACE TRIGGER trigger_insert_inventory_record
 AFTER INSERT ON inventory_record
 FOR EACH ROW
-EXECUTE FUNCTION log_inventory_insert();
+EXECUTE FUNCTION log_insert_inventory_record();

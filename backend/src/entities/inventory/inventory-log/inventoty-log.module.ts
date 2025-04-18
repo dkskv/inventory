@@ -22,10 +22,10 @@ export class InventoryLogModule implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly inventoryLogService: InventoryLogService) {}
 
   async onModuleInit() {
-    await this.inventoryLogService.createTrigger();
+    await this.inventoryLogService.createTriggers();
   }
 
   async onModuleDestroy() {
-    await this.inventoryLogService.deleteTrigger();
+    await this.inventoryLogService.dropTriggers();
   }
 }

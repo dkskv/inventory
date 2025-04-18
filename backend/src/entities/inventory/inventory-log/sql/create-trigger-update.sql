@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION log_inventory_update()
+CREATE OR REPLACE FUNCTION log_update_inventory_record()
 RETURNS TRIGGER AS $$
 DECLARE
     col_name TEXT;  
@@ -22,7 +22,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER trigger_inventory_update
+CREATE OR REPLACE TRIGGER trigger_update_inventory_record
 AFTER UPDATE ON inventory_record
 FOR EACH ROW
-EXECUTE FUNCTION log_inventory_update();
+EXECUTE FUNCTION log_update_inventory_record();
