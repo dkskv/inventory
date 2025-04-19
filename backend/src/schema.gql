@@ -148,20 +148,22 @@ enum InventoryAttribute {
   description
 }
 
+type UsedEntitiesDto {
+  locations: [LocationDto!]!
+  responsibles: [ResponsibleDto!]!
+  statuses: [StatusDto!]!
+}
+
 type InventoryLogsPagedDto {
   items: [InventoryLogDto!]!
   totalCount: Int!
-  usedLocations: [LocationDto!]!
-  usedResponsibles: [ResponsibleDto!]!
-  usedStatuses: [StatusDto!]!
+  usedEntities: UsedEntitiesDto!
 }
 
 type InventoryLogsOrGroupsPagedDto {
   items: [InventoryLogOrGroupDto!]!
   totalCount: Int!
-  usedLocations: [LocationDto!]!
-  usedResponsibles: [ResponsibleDto!]!
-  usedStatuses: [StatusDto!]!
+  usedEntities: UsedEntitiesDto!
 }
 
 union InventoryLogOrGroupDto = InventoryLogDto | InventoryLogsGroupDto

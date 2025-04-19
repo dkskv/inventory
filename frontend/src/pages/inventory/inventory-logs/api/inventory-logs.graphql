@@ -41,17 +41,19 @@ query InventoryLogsOrGroups(
       }
     }
     totalCount
-    usedLocations {
-      id
-      name
-    }
-    usedResponsibles {
-      id
-      name
-    }
-    usedStatuses {
-      id
-      name
+    usedEntities {
+      locations {
+        id
+        name
+      }
+      responsibles {
+        id
+        name
+      }
+      statuses {
+        id
+        name
+      }
     }
   }
 }
@@ -80,17 +82,19 @@ query InventoryLogs(
       nextValue
     }
     totalCount
-    usedLocations {
-      id
-      name
-    }
-    usedResponsibles {
-      id
-      name
-    }
-    usedStatuses {
-      id
-      name
+    usedEntities {
+      locations {
+        id
+        name
+      }
+      responsibles {
+        id
+        name
+      }
+      statuses {
+        id
+        name
+      }
     }
   }
 }

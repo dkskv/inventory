@@ -30,13 +30,15 @@ const getFormattedAttributeValue = (
 
   if (attribute === 'responsibleId') {
     return (
-      logs.usedResponsibles.find(({ id }) => id === value)?.name ?? unknownValue
+      logs.usedEntities.responsibles.find(({ id }) => id === value)?.name ??
+      unknownValue
     );
   }
 
   if (attribute === 'locationId') {
     return (
-      logs.usedLocations.find(({ id }) => id === value)?.name ?? unknownValue
+      logs.usedEntities.locations.find(({ id }) => id === value)?.name ??
+      unknownValue
     );
   }
 };

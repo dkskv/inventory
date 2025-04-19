@@ -2,14 +2,11 @@ import {
   Action,
   InventoryAttribute,
   InventoryLogsOrGroupsQuery,
-  LocationDto,
-  ResponsibleDto,
-  StatusDto,
 } from "@/gql/graphql";
 import { ColumnsType } from "antd/es/table";
 import { useTranslation } from "react-i18next";
 import { FilterPopover, OverCell, FetchSelect, Ellipsis } from "@/shared/ui";
-import { FiltersStore } from "../../model";
+import { convertEntitiesArraysToMaps, FiltersStore } from "../../model";
 import {
   InventoryLogPartialDto,
   InventoryLogsGroupPartialDto,
@@ -20,16 +17,15 @@ import { Flex, Row, Tag } from "antd";
 import { formatAttributeValue } from "./format-attribute-value";
 import { Fragment, useMemo } from "react";
 import { usePrimaryColumn } from "@/widgets/grouped-table";
+import { attributeTranslations } from "./attribute-translations";
+import omit from "lodash/omit";
 
 interface Params {
   activeGroup: InventoryLogsGroupPartialDto | undefined;
   setActiveGroup: (group: InventoryLogsGroupPartialDto | undefined) => void;
   filtersStore: FiltersStore;
   data:
-    | Pick<
-        InventoryLogsOrGroupsQuery["inventoryLogsOrGroups"],
-        "usedLocations" | "usedResponsibles" | "usedStatuses"
-      >
+    | Pick<InventoryLogsOrGroupsQuery["inventoryLogsOrGroups"], "usedEntities">
     | undefined;
 }
 
@@ -78,48 +74,18 @@ export const useColumns = ({
     setActiveGroup,
   });
 
-  const usedEntities = useMemo(() => {
-    const locations = new Map<number, LocationDto>();
-    const responsibles = new Map<number, ResponsibleDto>();
-    const statuses = new Map<number, Omit<StatusDto, "color">>();
-
-    if (data) {
-      data.usedLocations.forEach((e) => {
-        locations.set(e.id, e);
-      });
-
-      data.usedResponsibles.forEach((e) => {
-        responsibles.set(e.id, e);
-      });
-
-      data.usedStatuses.forEach((e) => {
-        statuses.set(e.id, e);
-      });
-    }
-
-    return { locations, responsibles, statuses } as const;
-  }, [data]);
+  const usedEntities = useMemo(
+    () =>
+      data
+        ? convertEntitiesArraysToMaps(omit(data.usedEntities, "__typename"))
+        : null,
+    [data]
+  );
 
   const renderAttribute = (attribute: InventoryAttribute) => {
-    if (attribute === "responsibleId") {
-      return <Tag>{t("responsible")}</Tag>;
-    }
+    const translationKey = attributeTranslations[attribute];
 
-    if (attribute === "locationId") {
-      return <Tag>{t("location")}</Tag>;
-    }
-
-    if (attribute === "serialNumber") {
-      return <Tag>{t("serialNumber")}</Tag>;
-    }
-
-    if (attribute === "description") {
-      return <Tag>{t("description")}</Tag>;
-    }
-
-    if (attribute === "statusId") {
-      return <Tag>{t("status")}</Tag>;
-    }
+    return translationKey ? <Tag>{t(translationKey)}</Tag> : null;
   };
 
   const parseCreatingAttributes = (value: string | null | undefined) => {
@@ -131,6 +97,10 @@ export const useColumns = ({
 
     return { locationId, responsibleId, description };
   };
+
+  if (!usedEntities) {
+    return [];
+  }
 
   return [
     primaryColumn,

@@ -110,13 +110,9 @@ export class InventoryLogService {
       order: { id: 'DESC' },
     });
 
-    const {
-      locations: usedLocations,
-      responsibles: usedResponsibles,
-      statuses: usedStatuses,
-    } = await this.findUsedEntities(items);
+    const usedEntities = await this.findUsedEntities(items);
 
-    return { items, totalCount, usedLocations, usedResponsibles, usedStatuses };
+    return { items, totalCount, usedEntities };
   }
 
   async findAllItemsOrGroups(paging: Paging, filtration?: Filtration) {
@@ -168,13 +164,9 @@ export class InventoryLogService {
       item.count > 1 ? omit(item, ['id', 'inventoryRecordId']) : item,
     );
 
-    const {
-      locations: usedLocations,
-      responsibles: usedResponsibles,
-      statuses: usedStatuses,
-    } = await this.findUsedEntities(items);
+    const usedEntities = await this.findUsedEntities(items);
 
-    return { items, totalCount, usedLocations, usedResponsibles, usedStatuses };
+    return { items, totalCount, usedEntities };
   }
 
   /** Получить сущности для атрибутов prevValue и nextValue лога */

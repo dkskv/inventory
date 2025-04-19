@@ -110,27 +110,27 @@ export const InventoryLogOrGroupDto = createUnionType({
 });
 
 @ObjectType()
-export class InventoryLogsPagedDto extends PagedArrayClassOf(InventoryLogDto) {
+export class UsedEntitiesDto {
   @Field(() => [LocationDto])
-  usedLocations: LocationDto[];
+  locations: LocationDto[];
 
   @Field(() => [ResponsibleDto])
-  usedResponsibles: ResponsibleDto[];
+  responsibles: ResponsibleDto[];
 
   @Field(() => [StatusDto])
-  usedStatuses: StatusDto[];
+  statuses: StatusDto[];
+}
+
+@ObjectType()
+export class InventoryLogsPagedDto extends PagedArrayClassOf(InventoryLogDto) {
+  @Field(() => UsedEntitiesDto)
+  usedEntities: UsedEntitiesDto;
 }
 
 @ObjectType()
 export class InventoryLogsOrGroupsPagedDto extends PagedArrayClassOf(
   InventoryLogOrGroupDto,
 ) {
-  @Field(() => [LocationDto])
-  usedLocations: LocationDto[];
-
-  @Field(() => [ResponsibleDto])
-  usedResponsibles: ResponsibleDto[];
-
-  @Field(() => [StatusDto])
-  usedStatuses: StatusDto[];
+  @Field(() => UsedEntitiesDto)
+  usedEntities: UsedEntitiesDto;
 }
