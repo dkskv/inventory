@@ -15,7 +15,7 @@ import { EnvVariables } from 'shared/env-validation';
 export class TgNotificationsService {
   private bot: TelegramBot | undefined;
   private client: Client;
-  private bufferedIds = new Set<number>();
+  private bufferedIds: number[] = [];
 
   constructor(
     private dataSource: DataSource,
@@ -74,31 +74,27 @@ export class TgNotificationsService {
         throw new Error('Invalid id');
       }
 
-      this.bufferedIds.add(id);
+      this.bufferedIds.push(id);
       this.flushLogs();
     });
   }
 
   private flushLogs = debounce(async () => {
-    if (this.bufferedIds.size === 0) {
+    if (this.bufferedIds.length === 0) {
       return;
     }
 
     const ids = Array.from(this.bufferedIds);
-    this.bufferedIds.clear();
+    this.bufferedIds.length = 0;
 
     const logs = await this.inventoryLogService.findAllItemsOrGroups(
       { limit: ids.length, offset: 0 },
       { ids },
+      { id: 'ASC' },
     );
 
-    const messages = formatLogs(logs);
-
-    messages.forEach((message) => {
-      this.sendMessage(message);
-    });
-
-    messages.forEach((m) => console.log(m));
+    const message = formatLogs(logs);
+    this.sendMessage(message);
   }, 1000);
 
   async dispose() {

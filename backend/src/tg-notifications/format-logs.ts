@@ -138,8 +138,11 @@ const formatLogAction = (
   return message;
 };
 
-export const formatLogs = (logs: PartialLogs) => {
-  return logs.items.map((item) => {
+const createSeparator = () =>
+  `\n\n${Array.from({ length: 40 }, () => '-').join('')}\n\n`;
+
+export const formatLogs = (logs: PartialLogs): string => {
+  const formattedLogs = logs.items.map((item) => {
     let message = `${icons.user}${item.author?.username ?? icons.unknownValue}\n\n`;
 
     message = formatLogAction(item, logs, message);
@@ -155,4 +158,6 @@ export const formatLogs = (logs: PartialLogs) => {
 
     return message;
   });
+
+  return formattedLogs.join(formattedLogs.length <= 1 ? '' : createSeparator());
 };

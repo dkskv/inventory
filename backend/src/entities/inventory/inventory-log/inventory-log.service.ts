@@ -1,6 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, FindOptionsWhere, In, IsNull, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsOrder,
+  FindOptionsWhere,
+  In,
+  IsNull,
+  OrderByCondition,
+  Repository,
+} from 'typeorm';
 import { InventoryLog } from './inventory-log.entity';
 import createTriggerInsertSql from './sql/create-trigger-insert.sql';
 import createTriggerUpdateSql from './sql/create-trigger-update.sql';
@@ -115,7 +123,11 @@ export class InventoryLogService {
     return { items, totalCount, usedEntities };
   }
 
-  async findAllItemsOrGroups(paging: Paging, filtration?: Filtration) {
+  async findAllItemsOrGroups(
+    paging: Paging,
+    filtration?: Filtration,
+    order: FindOptionsOrder<InventoryLog> = { id: 'DESC' },
+  ) {
     const builder = this.dataSource.createQueryBuilder(InventoryLog, 'row');
 
     builder
@@ -149,7 +161,7 @@ export class InventoryLogService {
       builder.where(this.prepareFiltration(filtration));
     }
 
-    builder.orderBy({ id: 'DESC' });
+    builder.orderBy(order as OrderByCondition);
 
     const { items: rawItems, totalCount } = await withPaging(builder, paging);
 
