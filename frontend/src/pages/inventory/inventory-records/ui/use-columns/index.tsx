@@ -126,7 +126,9 @@ export const useColumns = ({
         return (
           <Flex wrap={true} gap={8}>
             {entity.statuses.map((status) => (
-              <Tag color={status.color}>{status.name}</Tag>
+              <Tag key={status.id} color={status.color}>
+                {status.name}
+              </Tag>
             ))}
           </Flex>
         );
