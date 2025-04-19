@@ -189,7 +189,7 @@ export const useColumns = ({
       key: "prevValue",
       render(_, { entity }) {
         return (
-          <div style={{ width: 250, minWidth: "100%" }}>
+          <s style={{ width: 250, minWidth: "100%" }}>
             <Ellipsis>
               {formatAttributeValue(
                 entity.attribute,
@@ -197,7 +197,7 @@ export const useColumns = ({
                 usedEntities
               )}
             </Ellipsis>
-          </div>
+          </s>
         );
       },
     },
