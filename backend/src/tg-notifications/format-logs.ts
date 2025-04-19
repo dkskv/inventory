@@ -33,7 +33,7 @@ export const icons = {
   newRecord: '🆕',
   user: '👤',
   asset: '🛠️',
-  transition: '➡️',
+  transition: '⬇️',
   location: '🏙️',
   responsible: '👷',
   status: '#️⃣',
@@ -85,15 +85,15 @@ function buildAttributeRow(
   let result = '';
 
   if (item.prevValue) {
-    result += formatAttributeValue(
+    result += `<s>${formatAttributeValue(
       item.attribute as Attribute,
       JSON.parse(item.prevValue),
       logs,
-    );
+    )}</s>`;
   }
 
   if (item.prevValue && item.nextValue) {
-    result += ` ${icons.transition} `;
+    result += `\n${icons.transition}\n`;
   }
 
   if (item.nextValue) {

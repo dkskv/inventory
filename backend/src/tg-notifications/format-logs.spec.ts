@@ -59,7 +59,7 @@ describe('formatLogs', () => {
     });
 
     expect(result).toContain(
-      `${icons.location}Location 1 ${icons.transition} ${icons.location}Location 2`,
+      `<s>${icons.location}Location 1</s>\n${icons.transition}\n${icons.location}Location 2`,
     );
   });
 
@@ -73,7 +73,7 @@ describe('formatLogs', () => {
     });
 
     expect(result).toContain(
-      `${icons.responsible}Responsible 1 ${icons.transition} ${icons.responsible}Responsible 2`,
+      `<s>${icons.responsible}Responsible 1</s>\n${icons.transition}\n${icons.responsible}Responsible 2`,
     );
   });
 
@@ -87,7 +87,7 @@ describe('formatLogs', () => {
     });
 
     expect(result).toContain(
-      `${icons.description}Old description ${icons.transition} ${icons.description}New description`,
+      `<s>${icons.description}Old description</s>\n${icons.transition}\n${icons.description}New description`,
     );
   });
 
@@ -101,7 +101,7 @@ describe('formatLogs', () => {
     });
 
     expect(result).toContain(
-      `${icons.serialNumber}test 1 ${icons.transition} ${icons.serialNumber}test 2`,
+      `<s>${icons.serialNumber}test 1</s>\n${icons.transition}\n${icons.serialNumber}test 2`,
     );
   });
 
@@ -214,7 +214,7 @@ describe('formatLogs', () => {
     expect(result).toContain(`${icons.user}${icons.unknownValue}`);
 
     expect(result).toContain(
-      `${icons.location}${icons.unknownValue} ${icons.transition} ${icons.location}Location 1`,
+      `<s>${icons.location}${icons.unknownValue}</s>\n${icons.transition}\n${icons.location}Location 1`,
     );
   });
 });
