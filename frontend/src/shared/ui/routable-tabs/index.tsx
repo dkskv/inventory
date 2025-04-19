@@ -2,7 +2,7 @@ import { Flex, Tabs } from "antd";
 import { matchPath, Navigate, useLocation, useNavigate } from "react-router";
 import { SwitchWhenReady } from "../switch-when-ready";
 import { SizeType } from "antd/es/config-provider/SizeContext";
-import { useMatchedByPath } from "@/shared/lib";
+import { useLastNonNullable, useMatchedByPath } from "@/shared/lib";
 
 export interface RoutableTabConfig {
   label: string;
@@ -29,7 +29,8 @@ export const RoutableTabs: React.FC<RoutableTabsProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeItem = useMatchedByPath(items, basePath, (item) => item.path);
+  const matchedItem = useMatchedByPath(items, basePath, (item) => item.path);
+  const activeItem = useLastNonNullable(matchedItem);
 
   const findItemByPattern = (p: string) =>
     items.find((item) => p === item.path);
@@ -55,7 +56,7 @@ export const RoutableTabs: React.FC<RoutableTabsProps> = ({
         activeKey={activeItem?.path}
         renderByKey={(pattern) => findItemByPattern(pattern)?.element}
       />
-      {!activeItem && items[0] && matchPath(basePath, location.pathname) && (
+      {!matchedItem && items[0] && matchPath(basePath, location.pathname) && (
         <Navigate to={getItemPath(items[0])} />
       )}
     </Flex>
