@@ -18,13 +18,13 @@ describe('InventoryRecordService', () => {
   let service: InventoryRecordService;
   let dataSource: DataSource;
 
-  // Test entities
+  // Тестовые сущности
   let assets: Map<string, Asset>;
   let locations: Map<string, Location>;
   let responsibles: Map<string, Responsible>;
   let statuses: Map<string, Status>;
 
-  // Test data setup helpers
+  // Вспомогательные функции для создания тестовых данных
   const createCatalogEntities = async <T extends { id: number; name: string }>(
     service: CatalogEntityService<T>,
     count: number,
@@ -61,27 +61,27 @@ describe('InventoryRecordService', () => {
   };
 
   const setupTestRecords = async () => {
-    // Group 1: 3 records
+    // Группа 1: 3 записи
     await createInventoryRecordByNames('0', '0', '0');
     await createInventoryRecordByNames('0', '0', '0');
     await createInventoryRecordByNames('0', '0', '0');
 
-    // 1 record
+    // 1 запись
     await createInventoryRecordByNames('1', '1', '2');
 
-    // 1 record
+    // 1 запись
     await createInventoryRecordByNames('1', '1', '3');
 
-    // Group 2: 2 records
+    // Группа 2: 2 записи
     await createInventoryRecordByNames('1', '0', '0');
     await createInventoryRecordByNames('1', '0', '0');
 
-    // Group 3: 3 records
+    // Группа 3: 3 записи
     await createInventoryRecordByNames('1', '0', '1');
     await createInventoryRecordByNames('1', '0', '1');
     await createInventoryRecordByNames('1', '0', '1');
 
-    // Group 4: 2 records
+    // Группа 4: 2 записи
     await createInventoryRecordByNames('1', '1', '1');
     await createInventoryRecordByNames('1', '1', '1');
   };
@@ -129,11 +129,11 @@ describe('InventoryRecordService', () => {
     await dataSource.destroy();
   });
 
-  describe('Grouping functionality', () => {
+  describe('Функциональность группировки', () => {
     beforeEach(setupTestRecords);
 
-    it('should correctly group records without affecting by updates', async () => {
-      // These updates shouldn't affect grouping
+    it('должен корректно группировать записи без влияния обновлений', async () => {
+      // Эти обновления не должны влиять на группировку
       await updateInventoryRecord(
         {
           assetIds: [assets.get('0')!.id],
@@ -202,7 +202,7 @@ describe('InventoryRecordService', () => {
       );
     });
 
-    it('should support pagination', async () => {
+    it('должен поддерживать пагинацию', async () => {
       const firstPage = await service.findAllItemsOrGroups({
         limit: 1,
         offset: 4,
@@ -241,10 +241,10 @@ describe('InventoryRecordService', () => {
     });
   });
 
-  describe('Drill-down functionality', () => {
+  describe('Функциональность детализации', () => {
     beforeEach(setupTestRecords);
 
-    it('should return all records when drilling into a group', async () => {
+    it('должен возвращать все записи при детализации группы', async () => {
       const { items } = await service.findAll(
         { limit: 100, offset: 0 },
         {
@@ -265,8 +265,8 @@ describe('InventoryRecordService', () => {
     });
   });
 
-  describe('Status management', () => {
-    it('statuses are added when creating a record', async () => {
+  describe('Управление статусами', () => {
+    it('должен добавлять статусы при создании записи', async () => {
       const entity: DeepPartial<InventoryRecord> = {
         asset: assets.get('0'),
         location: locations.get('0'),
@@ -280,7 +280,7 @@ describe('InventoryRecordService', () => {
       expectPartialMatch([entity], items);
     });
 
-    it('status clearing works', async () => {
+    it('должен корректно очищать статусы', async () => {
       const entity: DeepPartial<InventoryRecord> = {
         asset: assets.get('0'),
         location: locations.get('0'),
@@ -288,13 +288,9 @@ describe('InventoryRecordService', () => {
         statuses: [statuses.get('0')!, statuses.get('1')!],
       };
 
-      await createInventoryRecord(entity);
+      const records = await createInventoryRecord(entity);
       await updateInventoryRecord(
-        {
-          assetIds: [assets.get('0')!.id],
-          locationIds: [locations.get('0')!.id],
-          responsibleIds: [responsibles.get('0')!.id],
-        },
+        { ids: records.map((r) => r.id) },
         { statuses: [] },
       );
 
@@ -303,10 +299,10 @@ describe('InventoryRecordService', () => {
       expectPartialMatch([{ ...entity, statuses: [] }], items);
     });
 
-    it('should correctly update and display statuses', async () => {
+    it('должен корректно обновлять и отображать статусы', async () => {
       await setupTestRecords();
 
-      // Update statuses for different groups
+      // Обновляем статусы для разных групп
       await updateInventoryRecord(
         {
           assetIds: [assets.get('1')!.id],
@@ -334,7 +330,7 @@ describe('InventoryRecordService', () => {
         { statuses: [statuses.get('0')!, statuses.get('2')!] },
       );
 
-      // Check grouped view
+      // Проверяем групповое представление
       const groupedView = await service.findAllItemsOrGroups({
         limit: 3,
         offset: 3,
@@ -363,7 +359,7 @@ describe('InventoryRecordService', () => {
         groupedView.items,
       );
 
-      // Check detailed view
+      // Проверяем детализированное представление
       const detailedView = await service.findAll(
         { limit: 100, offset: 0 },
         {

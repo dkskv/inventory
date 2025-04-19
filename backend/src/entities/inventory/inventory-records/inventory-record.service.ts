@@ -3,12 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   DataSource,
   DeepPartial,
-  DeleteQueryBuilder,
   In,
   QueryRunner,
   Repository,
   SelectQueryBuilder,
-  UpdateQueryBuilder,
 } from 'typeorm';
 import { InventoryRecord } from './inventory-record.entity';
 import { Paging } from 'src/shared/service/paging';
@@ -249,8 +247,8 @@ export class InventoryRecordService {
     }[];
   }
 
-  private async executeInTransaction(
-    execute: (queryRunner: QueryRunner) => Promise<void>,
+  private async executeInTransaction<Result>(
+    execute: (queryRunner: QueryRunner) => Promise<Result>,
   ) {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -258,8 +256,10 @@ export class InventoryRecordService {
     await queryRunner.startTransaction();
 
     try {
-      await execute(queryRunner);
+      const result = await execute(queryRunner);
       await queryRunner.commitTransaction();
+
+      return result;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
@@ -272,15 +272,15 @@ export class InventoryRecordService {
     actingUserId: number,
     entity: DeepPartial<InventoryRecord>,
     count = 1,
-  ): Promise<void> {
-    await this.executeInTransaction(async (queryRunner) => {
+  ): Promise<InventoryRecord[]> {
+    return this.executeInTransaction(async (queryRunner) => {
       await queryRunner.query(`SET LOCAL var.user_id = '${actingUserId}'`);
 
       const records = Array.from({ length: count }).map(() =>
         queryRunner.manager.create(InventoryRecord, entity),
       );
 
-      await queryRunner.manager.save(records);
+      return queryRunner.manager.save(records);
     });
   }
 
@@ -289,8 +289,8 @@ export class InventoryRecordService {
     actingUserId: number,
     filtration: Filtration,
     partialEntity: QueryDeepPartialEntity<InventoryRecord>,
-  ) {
-    await this.executeInTransaction(async (queryRunner) => {
+  ): Promise<InventoryRecord[]> {
+    return this.executeInTransaction(async (queryRunner) => {
       const qb = queryRunner.manager.createQueryBuilder(
         InventoryRecord,
         'inventoryRecord',
@@ -306,7 +306,7 @@ export class InventoryRecordService {
       );
 
       await queryRunner.query(`SET LOCAL var.user_id = '${actingUserId}'`);
-      await queryRunner.manager.save(entitiesToUpdate);
+      return queryRunner.manager.save(entitiesToUpdate);
     });
   }
 
