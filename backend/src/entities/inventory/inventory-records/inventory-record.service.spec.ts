@@ -266,9 +266,46 @@ describe('InventoryRecordService', () => {
   });
 
   describe('Status management', () => {
-    beforeEach(setupTestRecords);
+    it('statuses are added when creating a record', async () => {
+      const entity: DeepPartial<InventoryRecord> = {
+        asset: assets.get('0'),
+        location: locations.get('0'),
+        responsible: responsibles.get('0'),
+        statuses: [statuses.get('0')!, statuses.get('1')!],
+      };
+
+      await createInventoryRecord(entity);
+      const { items } = await service.findAll({ limit: 1, offset: 0 });
+
+      expectPartialMatch([entity], items);
+    });
+
+    it('status clearing works', async () => {
+      const entity: DeepPartial<InventoryRecord> = {
+        asset: assets.get('0'),
+        location: locations.get('0'),
+        responsible: responsibles.get('0'),
+        statuses: [statuses.get('0')!, statuses.get('1')!],
+      };
+
+      await createInventoryRecord(entity);
+      await updateInventoryRecord(
+        {
+          assetIds: [assets.get('0')!.id],
+          locationIds: [locations.get('0')!.id],
+          responsibleIds: [responsibles.get('0')!.id],
+        },
+        { statuses: [] },
+      );
+
+      const { items } = await service.findAll({ limit: 1, offset: 0 });
+
+      expectPartialMatch([{ ...entity, statuses: [] }], items);
+    });
 
     it('should correctly update and display statuses', async () => {
+      await setupTestRecords();
+
       // Update statuses for different groups
       await updateInventoryRecord(
         {

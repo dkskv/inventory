@@ -55,7 +55,7 @@ export class InventoryRecordService {
       asset: values.assetId === undefined ? undefined : { id: values.assetId },
       serialNumber: values.serialNumber === '' ? null : values.serialNumber,
       description: values.description === '' ? null : values.description,
-      statuses: values.statusesIds?.length
+      statuses: values.statusesIds
         ? values.statusesIds.map((id) => ({ id }))
         : undefined,
     };
@@ -273,16 +273,14 @@ export class InventoryRecordService {
     entity: DeepPartial<InventoryRecord>,
     count = 1,
   ): Promise<void> {
-    const newEntity = this.repository.create(entity);
-
     await this.executeInTransaction(async (queryRunner) => {
       await queryRunner.query(`SET LOCAL var.user_id = '${actingUserId}'`);
-      await queryRunner.manager.insert(
-        InventoryRecord,
-        Array.from<QueryDeepPartialEntity<InventoryRecord>>({
-          length: count,
-        }).fill(newEntity),
+
+      const records = Array.from({ length: count }).map(() =>
+        queryRunner.manager.create(InventoryRecord, entity),
       );
+
+      await queryRunner.manager.save(records);
     });
   }
 
