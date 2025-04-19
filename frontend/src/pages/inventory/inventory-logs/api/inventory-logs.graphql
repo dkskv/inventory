@@ -49,6 +49,10 @@ query InventoryLogsOrGroups(
       id
       name
     }
+    usedStatuses {
+      id
+      name
+    }
   }
 }
 
@@ -81,6 +85,10 @@ query InventoryLogs(
       name
     }
     usedResponsibles {
+      id
+      name
+    }
+    usedStatuses {
       id
       name
     }

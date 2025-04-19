@@ -12,6 +12,7 @@ import { AssetDto } from 'src/entities/catalogs/assets/asset.dto';
 import { UserDto } from 'src/entities/user/user.dto';
 import { LocationDto } from 'src/entities/catalogs/locations/location.dto';
 import { ResponsibleDto } from 'src/entities/catalogs/responsibles/responsible.dto';
+import { StatusDto } from 'src/entities/catalogs/statuses/status.dto';
 
 export enum Action {
   CREATE = 'CREATE',
@@ -24,6 +25,7 @@ export enum InventoryAttribute {
   assetId = 'assetId',
   locationId = 'locationId',
   responsibleId = 'responsibleId',
+  statusId = 'statusId',
   serialNumber = 'serialNumber',
   description = 'description',
 }
@@ -114,6 +116,9 @@ export class InventoryLogsPagedDto extends PagedArrayClassOf(InventoryLogDto) {
 
   @Field(() => [ResponsibleDto])
   usedResponsibles: ResponsibleDto[];
+
+  @Field(() => [StatusDto])
+  usedStatuses: StatusDto[];
 }
 
 @ObjectType()
@@ -125,4 +130,7 @@ export class InventoryLogsOrGroupsPagedDto extends PagedArrayClassOf(
 
   @Field(() => [ResponsibleDto])
   usedResponsibles: ResponsibleDto[];
+
+  @Field(() => [StatusDto])
+  usedStatuses: StatusDto[];
 }

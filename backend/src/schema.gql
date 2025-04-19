@@ -143,6 +143,7 @@ enum InventoryAttribute {
   assetId
   locationId
   responsibleId
+  statusId
   serialNumber
   description
 }
@@ -152,6 +153,7 @@ type InventoryLogsPagedDto {
   totalCount: Int!
   usedLocations: [LocationDto!]!
   usedResponsibles: [ResponsibleDto!]!
+  usedStatuses: [StatusDto!]!
 }
 
 type InventoryLogsOrGroupsPagedDto {
@@ -159,6 +161,7 @@ type InventoryLogsOrGroupsPagedDto {
   totalCount: Int!
   usedLocations: [LocationDto!]!
   usedResponsibles: [ResponsibleDto!]!
+  usedStatuses: [StatusDto!]!
 }
 
 union InventoryLogOrGroupDto = InventoryLogDto | InventoryLogsGroupDto

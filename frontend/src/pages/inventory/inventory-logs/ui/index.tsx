@@ -5,12 +5,10 @@ import { InventoryLogsGroupPartialDto } from "../api";
 import { useDependentState, useLastNonNullable } from "@/shared/lib";
 import { useDelayedValue } from "react-when-ready";
 import { InventoryLogOrGroupCrud, InventoryLogsGroupCrud } from "../cruds";
-import { Alert } from "antd";
-import { useTranslation } from "react-i18next";
+import { Flex } from "antd";
 import { SwitchWhenReady } from "@/shared/ui";
 
 const InventoryLogsPageComponent = () => {
-  const { t } = useTranslation();
   const filtersStore = useFiltersStore();
   const filterValueForServer =
     useDelayedValue(filtersStore.serverValue, 500) ?? filtersStore.serverValue;
@@ -22,12 +20,7 @@ const InventoryLogsPageComponent = () => {
   const [rootPage, setRootPage] = useDependentState(1, [filterValueForServer]);
 
   return (
-    <>
-      <Alert
-        showIcon
-        message={t("status-logging-is-not-supported-yet")}
-        type="warning"
-      />
+    <Flex vertical={true}>
       <SwitchWhenReady
         activeKey={activeGroup ? "GROUP" : "ROOT"}
         renderByKey={(key) => {
@@ -69,7 +62,7 @@ const InventoryLogsPageComponent = () => {
           }
         }}
       />
-    </>
+    </Flex>
   );
 };
 

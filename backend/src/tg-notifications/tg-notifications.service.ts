@@ -25,12 +25,12 @@ export class TgNotificationsService {
 
   private async createTrigger() {
     await this.dataSource.query(createTriggerInsertLogSql);
-    console.log('Triggers on inventory_log created successfully');
+    console.log('Triggers on `InventoryLog` created successfully');
   }
 
   private async deleteTrigger() {
     await this.dataSource.query(dropTriggerSql);
-    console.log('Triggers on inventory_log deleted successfully');
+    console.log('Triggers on `InventoryLog` deleted successfully');
   }
 
   private sendMessage(message: string) {

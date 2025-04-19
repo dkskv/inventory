@@ -4,6 +4,8 @@ import { DataSource, FindOptionsWhere, In, IsNull, Repository } from 'typeorm';
 import { InventoryLog } from './inventory-log.entity';
 import createTriggerInsertSql from './sql/create-trigger-insert.sql';
 import createTriggerUpdateSql from './sql/create-trigger-update.sql';
+import createTriggerInsertStatusSql from './sql/create-trigger-insert-status.sql';
+import createTriggerDeleteStatusSql from './sql/create-trigger-delete-status.sql';
 import dropAllTriggersSql from './sql/drop-all-triggers.sql';
 import { Paging } from 'src/shared/service/paging';
 import { isNil, isNumber, omit } from 'lodash';
@@ -11,6 +13,7 @@ import { LocationService } from 'src/entities/catalogs/locations/location.servic
 import { ResponsibleService } from 'src/entities/catalogs/responsibles/responsible.service';
 import { withPaging } from 'src/shared/service/with-paging';
 import { Asset } from 'src/entities/catalogs/assets/asset.entity';
+import { StatusService } from 'src/entities/catalogs/statuses/status.service';
 
 export interface Filtration {
   timestamp?: Date | null;
@@ -33,18 +36,24 @@ export class InventoryLogService {
     private readonly repository: Repository<InventoryLog>,
     private readonly locationsService: LocationService,
     private readonly responsibleService: ResponsibleService,
+    private readonly statusService: StatusService,
   ) {}
 
   async createTriggers() {
     await this.dataSource.query(
-      [createTriggerInsertSql, createTriggerUpdateSql].join('\n'),
+      [
+        createTriggerInsertSql,
+        createTriggerUpdateSql,
+        createTriggerInsertStatusSql,
+        createTriggerDeleteStatusSql,
+      ].join('\n'),
     );
-    console.log('Triggers on inventory_record created successfully');
+    console.log('Triggers on `InventoryRecord` created successfully');
   }
 
   async dropTriggers() {
     await this.dataSource.query(dropAllTriggersSql);
-    console.log('Triggers on inventory_record deleted successfully');
+    console.log('Triggers on `InventoryRecord` deleted successfully');
   }
 
   private prepareFiltration(filtration: Filtration) {
@@ -101,10 +110,13 @@ export class InventoryLogService {
       order: { id: 'DESC' },
     });
 
-    const { locations: usedLocations, responsibles: usedResponsibles } =
-      await this.findUsedEntities(items);
+    const {
+      locations: usedLocations,
+      responsibles: usedResponsibles,
+      statuses: usedStatuses,
+    } = await this.findUsedEntities(items);
 
-    return { items, totalCount, usedLocations, usedResponsibles };
+    return { items, totalCount, usedLocations, usedResponsibles, usedStatuses };
   }
 
   async findAllItemsOrGroups(paging: Paging, filtration?: Filtration) {
@@ -156,10 +168,13 @@ export class InventoryLogService {
       item.count > 1 ? omit(item, ['id', 'inventoryRecordId']) : item,
     );
 
-    const { locations: usedLocations, responsibles: usedResponsibles } =
-      await this.findUsedEntities(items);
+    const {
+      locations: usedLocations,
+      responsibles: usedResponsibles,
+      statuses: usedStatuses,
+    } = await this.findUsedEntities(items);
 
-    return { items, totalCount, usedLocations, usedResponsibles };
+    return { items, totalCount, usedLocations, usedResponsibles, usedStatuses };
   }
 
   /** Получить сущности для атрибутов prevValue и nextValue лога */
@@ -171,6 +186,7 @@ export class InventoryLogService {
   ) {
     const locationsIds = new Set<number>();
     const responsiblesIds = new Set<number>();
+    const statusesIds = new Set<number>();
 
     logs.forEach((log) => {
       if (log.action === 'CREATE') {
@@ -209,14 +225,17 @@ export class InventoryLogService {
         case 'responsibleId':
           addTo(responsiblesIds);
           return;
+        case 'statusId':
+          addTo(statusesIds);
       }
     });
 
-    const [locations, responsibles] = await Promise.all([
+    const [locations, responsibles, statuses] = await Promise.all([
       this.locationsService.findByIds([...locationsIds]),
       this.responsibleService.findByIds([...responsiblesIds]),
+      this.statusService.findByIds([...statusesIds]),
     ]);
 
-    return { locations, responsibles } as const;
+    return { locations, responsibles, statuses } as const;
   }
 }

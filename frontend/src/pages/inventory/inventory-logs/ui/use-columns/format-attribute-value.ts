@@ -1,4 +1,4 @@
-import { LocationDto, ResponsibleDto } from "@/gql/graphql";
+import { LocationDto, ResponsibleDto, StatusDto } from "@/gql/graphql";
 import isNumber from "lodash/isNumber";
 import isString from "lodash/isString";
 
@@ -10,6 +10,7 @@ export const formatAttributeValue = (
   entities: {
     locations: Map<number, LocationDto>;
     responsibles: Map<number, ResponsibleDto>;
+    statuses: Map<number, Omit<StatusDto, "color">>;
   }
 ): string | null | undefined => {
   const pickEntity = <T extends { name: string }>(
@@ -26,6 +27,10 @@ export const formatAttributeValue = (
 
   if (attribute === "locationId") {
     return pickEntity(entities.locations);
+  }
+
+  if (attribute === "statusId") {
+    return pickEntity(entities.statuses);
   }
 
   return parseJsonIfString(value);

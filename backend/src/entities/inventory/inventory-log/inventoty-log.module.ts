@@ -7,14 +7,19 @@ import { LocationService } from 'src/entities/catalogs/locations/location.servic
 import { ResponsibleService } from 'src/entities/catalogs/responsibles/responsible.service';
 import { Location } from 'src/entities/catalogs/locations/location.entity';
 import { Responsible } from 'src/entities/catalogs/responsibles/responsible.entity';
+import { StatusService } from 'src/entities/catalogs/statuses/status.service';
+import { Status } from 'src/entities/catalogs/statuses/status.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([InventoryLog, Location, Responsible])],
+  imports: [
+    TypeOrmModule.forFeature([InventoryLog, Location, Responsible, Status]),
+  ],
   providers: [
     InventoryLogService,
     InventoryLogResolver,
     LocationService,
     ResponsibleService,
+    StatusService,
   ],
   exports: [InventoryLogService],
 })

@@ -4,6 +4,7 @@ import {
   InventoryLogsOrGroupsQuery,
   LocationDto,
   ResponsibleDto,
+  StatusDto,
 } from "@/gql/graphql";
 import { ColumnsType } from "antd/es/table";
 import { useTranslation } from "react-i18next";
@@ -27,7 +28,7 @@ interface Params {
   data:
     | Pick<
         InventoryLogsOrGroupsQuery["inventoryLogsOrGroups"],
-        "usedLocations" | "usedResponsibles"
+        "usedLocations" | "usedResponsibles" | "usedStatuses"
       >
     | undefined;
 }
@@ -80,6 +81,7 @@ export const useColumns = ({
   const usedEntities = useMemo(() => {
     const locations = new Map<number, LocationDto>();
     const responsibles = new Map<number, ResponsibleDto>();
+    const statuses = new Map<number, Omit<StatusDto, "color">>();
 
     if (data) {
       data.usedLocations.forEach((e) => {
@@ -89,9 +91,13 @@ export const useColumns = ({
       data.usedResponsibles.forEach((e) => {
         responsibles.set(e.id, e);
       });
+
+      data.usedStatuses.forEach((e) => {
+        statuses.set(e.id, e);
+      });
     }
 
-    return { locations, responsibles } as const;
+    return { locations, responsibles, statuses } as const;
   }, [data]);
 
   const renderAttribute = (attribute: InventoryAttribute) => {
@@ -109,6 +115,10 @@ export const useColumns = ({
 
     if (attribute === "description") {
       return <Tag>{t("description")}</Tag>;
+    }
+
+    if (attribute === "statusId") {
+      return <Tag>{t("status")}</Tag>;
     }
   };
 
