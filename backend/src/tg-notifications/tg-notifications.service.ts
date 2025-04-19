@@ -40,7 +40,7 @@ export class TgNotificationsService {
       return;
     }
 
-    this.bot.sendMessage(chatId, message);
+    this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
   }
 
   async run() {

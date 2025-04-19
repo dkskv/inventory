@@ -3,6 +3,7 @@ import { InventoryLogService } from 'src/entities/inventory/inventory-log/invent
 type Attribute =
   | 'locationId'
   | 'responsibleId'
+  | 'statusId'
   | 'description'
   | 'serialNumber';
 
@@ -11,37 +12,69 @@ type Logs = Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>;
 const attributeIcons: Record<Attribute, string> = {
   locationId: '🏙️',
   responsibleId: '👷',
+  statusId: '#️⃣',
   description: '💬',
   serialNumber: '🏷️',
 };
 
 const unknownValue = '❓';
 
-const getFormattedAttributeValue = (
+const formatAttributeValue = (
   attribute: Attribute,
   value: unknown,
   logs: Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>,
 ): string | undefined => {
   if (!value) return unknownValue;
 
+  const icon = attributeIcons[attribute];
+
   if (attribute === 'serialNumber' || attribute === 'description') {
-    return String(value);
+    return icon + String(value);
   }
 
-  if (attribute === 'responsibleId') {
-    return (
-      logs.usedEntities.responsibles.find(({ id }) => id === value)?.name ??
-      unknownValue
-    );
-  }
+  const entityMap = {
+    responsibleId: 'responsibles',
+    locationId: 'locations',
+    statusId: 'statuses',
+  } as const;
 
-  if (attribute === 'locationId') {
+  if (attribute in entityMap) {
+    const entityType = entityMap[attribute];
     return (
-      logs.usedEntities.locations.find(({ id }) => id === value)?.name ??
-      unknownValue
+      icon +
+      (logs.usedEntities[entityType].find(({ id }) => id === value)?.name ??
+        unknownValue)
     );
   }
 };
+
+function buildAttributeRow(item: Logs['items'][0], logs: Logs): string {
+  let result = '';
+
+  if (item.prevValue) {
+    result += formatAttributeValue(
+      item.attribute as Attribute,
+      JSON.parse(item.prevValue),
+      logs,
+    );
+  }
+
+  if (item.prevValue && item.nextValue) {
+    result += ' ➡️ ';
+  }
+
+  if (item.nextValue) {
+    result += formatAttributeValue(
+      item.attribute as Attribute,
+      JSON.parse(item.nextValue),
+      logs,
+    );
+  } else {
+    result = `<s>${result}</s>`;
+  }
+
+  return result;
+}
 
 const formatLogAction = (
   item: Logs['items'][0],
@@ -58,31 +91,14 @@ const formatLogAction = (
       message += Object.entries({ locationId, responsibleId, description })
         .map(
           ([attribute, value]) =>
-            value &&
-            attributeIcons[attribute as Attribute] +
-              getFormattedAttributeValue(attribute as Attribute, value, logs),
+            value && formatAttributeValue(attribute as Attribute, value, logs),
         )
         .filter(Boolean)
         .join('\n');
     }
   } else {
     if (item.attribute) {
-      if (item.prevValue) {
-        message += attributeIcons[item.attribute as Attribute];
-        message += getFormattedAttributeValue(
-          item.attribute as Attribute,
-          item.prevValue && JSON.parse(item.prevValue),
-          logs,
-        );
-        message += ' ➡️ ';
-      }
-
-      message += attributeIcons[item.attribute as Attribute];
-      message += getFormattedAttributeValue(
-        item.attribute as Attribute,
-        item.nextValue && JSON.parse(item.nextValue),
-        logs,
-      );
+      message += buildAttributeRow(item, logs);
     }
   }
 
