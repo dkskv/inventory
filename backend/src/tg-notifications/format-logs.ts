@@ -1,3 +1,5 @@
+import { Asset } from 'src/entities/catalogs/assets/asset.entity';
+import { User } from 'src/entities/user/user.entity';
 import { InventoryLogService } from 'src/entities/inventory/inventory-log/inventory-log.service';
 
 type Attribute =
@@ -7,24 +9,52 @@ type Attribute =
   | 'description'
   | 'serialNumber';
 
-type Logs = Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>;
+type FullLogs = Awaited<
+  ReturnType<InventoryLogService['findAllItemsOrGroups']>
+>;
 
-const attributeIcons: Record<Attribute, string> = {
-  locationId: '🏙️',
-  responsibleId: '👷',
-  statusId: '#️⃣',
+export type PartialLogs = {
+  items: (Omit<
+    FullLogs['items'][number],
+    'id' | 'timestamp' | 'asset' | 'author'
+  > & {
+    asset: Pick<Asset, 'name'>;
+    author: Pick<User, 'username'> | null;
+  })[];
+  usedEntities: {
+    readonly locations: { id: number; name: string }[];
+    readonly responsibles: { id: number; name: string }[];
+    readonly statuses: { id: number; name: string }[];
+  };
+};
+
+export const icons = {
+  unknownValue: '❓',
+  newRecord: '🆕',
+  user: '👤',
+  asset: '🛠️',
+  transition: '➡️',
+  location: '🏙️',
+  responsible: '👷',
+  status: '#️⃣',
   description: '💬',
   serialNumber: '🏷️',
 };
 
-const unknownValue = '❓';
+export const attributeIcons: Record<Attribute, string> = {
+  locationId: icons.location,
+  responsibleId: icons.responsible,
+  statusId: icons.status,
+  description: icons.description,
+  serialNumber: icons.serialNumber,
+};
 
 const formatAttributeValue = (
   attribute: Attribute,
   value: unknown,
-  logs: Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>,
+  logs: PartialLogs,
 ): string | undefined => {
-  if (!value) return unknownValue;
+  if (!value) return icons.unknownValue;
 
   const icon = attributeIcons[attribute];
 
@@ -43,12 +73,15 @@ const formatAttributeValue = (
     return (
       icon +
       (logs.usedEntities[entityType].find(({ id }) => id === value)?.name ??
-        unknownValue)
+        icons.unknownValue)
     );
   }
 };
 
-function buildAttributeRow(item: Logs['items'][0], logs: Logs): string {
+function buildAttributeRow(
+  item: PartialLogs['items'][0],
+  logs: PartialLogs,
+): string {
   let result = '';
 
   if (item.prevValue) {
@@ -60,7 +93,7 @@ function buildAttributeRow(item: Logs['items'][0], logs: Logs): string {
   }
 
   if (item.prevValue && item.nextValue) {
-    result += ' ➡️ ';
+    result += ` ${icons.transition} `;
   }
 
   if (item.nextValue) {
@@ -77,8 +110,8 @@ function buildAttributeRow(item: Logs['items'][0], logs: Logs): string {
 }
 
 const formatLogAction = (
-  item: Logs['items'][0],
-  logs: Logs,
+  item: PartialLogs['items'][0],
+  logs: PartialLogs,
   message: string,
 ): string => {
   if (item.action === 'CREATE') {
@@ -86,7 +119,7 @@ const formatLogAction = (
       const { locationId, responsibleId, description } = JSON.parse(
         item.nextValue,
       );
-      message += '🆕\n\n';
+      message += `${icons.newRecord}\n\n`;
 
       message += Object.entries({ locationId, responsibleId, description })
         .map(
@@ -105,19 +138,19 @@ const formatLogAction = (
   return message;
 };
 
-export const formatLogs = (
-  logs: Awaited<ReturnType<InventoryLogService['findAllItemsOrGroups']>>,
-) => {
+export const formatLogs = (logs: PartialLogs) => {
   return logs.items.map((item) => {
-    let message = '👤' + (item.author?.username ?? unknownValue) + '\n\n';
+    let message = `${icons.user}${item.author?.username ?? icons.unknownValue}\n\n`;
 
     message = formatLogAction(item, logs, message);
 
-    message += '\n\n🛠️' + ' ' + item.asset.name;
+    message += `\n\n${icons.asset} ${item.asset.name}`;
     if (item.count > 1) message += ` (x${item.count})`;
 
     if (item.serialNumbers.length > 0 && item.attribute !== 'serialNumber') {
-      message += '\n' + item.serialNumbers.map((n) => `🏷️${n}`).join('\n');
+      message +=
+        '\n' +
+        item.serialNumbers.map((n) => `${icons.serialNumber}${n}`).join('\n');
     }
 
     return message;
